@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// Inspector-editable feedback intensity. These values vary visuals/audio without changing gameplay rules.
 [CreateAssetMenu(menuName = "Rage Game/FX Profile")]
 public class FXProfile : ScriptableObject
 {

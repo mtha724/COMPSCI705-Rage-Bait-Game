@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using UnityEngine;
 
+// Writes local per-session CSV data from the persistent manager's events; nothing is uploaded.
 public class RunLogger : MonoBehaviour
 {
     public string LogPath { get; private set; }
@@ -17,6 +18,7 @@ public class RunLogger : MonoBehaviour
     }
     private void Update()
     {
+        // Sample FPS only during active play so menus and transition delays do not dilute the measurement.
         if (manager.State != RunState.Playing || manager.Paused) return;
         frameSeconds += Time.unscaledDeltaTime;
         frameCount++;
@@ -31,6 +33,7 @@ public class RunLogger : MonoBehaviour
         {
             if (kind == "session_start")
             {
+                // A new run gets a separate file even when the same participant restarts within one second.
                 sessionId = Guid.NewGuid().ToString("N");
                 frameSeconds = 0f;
                 frameCount = 0;
@@ -45,11 +48,13 @@ public class RunLogger : MonoBehaviour
                 Number(manager.ElapsedSeconds), Number(manager.ActiveSeconds), Number(manager.LevelSeconds), manager.CurrentLevel,
                 manager.Attempt.ToString(), manager.Deaths.ToString(), manager.FurthestLevel.ToString(), Number(p.x), Number(p.y) };
             for (int i = 0; i < values.Length; i++) values[i] = Csv(values[i]);
+            // Append each event immediately so completed measurements are retained if the app closes.
             File.AppendAllText(LogPath, string.Join(",", values) + "\n");
         }
         catch (IOException error) { Debug.LogError("Study log could not be written: " + error.Message); }
         catch (UnauthorizedAccessException error) { Debug.LogError("Study log folder is unavailable: " + error.Message); }
     }
+    // Stable decimal formatting and CSV quoting keep participant codes and values safe to import.
     private static string Number(double value) => value.ToString("0.000", CultureInfo.InvariantCulture);
     private static string Csv(string value) => "\"" + (value ?? "").Replace("\"", "\"\"") + "\"";
     private void OnDestroy() { if (manager != null) manager.Recorded -= Record; }

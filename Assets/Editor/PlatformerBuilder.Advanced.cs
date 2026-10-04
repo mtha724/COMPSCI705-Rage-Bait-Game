@@ -6,6 +6,7 @@ using UnityEngine;
 public static partial class PlatformerBuilder
 {
     [MenuItem("Tools/Rage Game/Build Six Levels")]
+    // Regenerates all six layouts and trap prefabs; this is an authoring tool, not a runtime level loader.
     public static void PhaseThree()
     {
         PrepareArt();
@@ -29,11 +30,13 @@ public static partial class PlatformerBuilder
         disappearing.activateOnLanding = true;
         disappearing.delay = .32f;
         PrefabUtility.SaveAsPrefabAsset(platform, Prefabs + "/FakePlatform.prefab");
+        // Derive a visually identical real platform by removing only its collapsing behaviour.
         UnityEngine.Object.DestroyImmediate(disappearing);
         platform.name = "RealPlatform";
         PrefabUtility.SaveAsPrefabAsset(platform, Prefabs + "/RealPlatform.prefab");
         var ceiling = MakeFalling("FallingCeiling", SpriteAt("Traps/Blocks/Idle.png"), new Vector2(1.7f, .55f), "ceiling");
         PrefabUtility.SaveAsPrefabAsset(ceiling, Prefabs + "/FallingCeiling.prefab");
+        // The fake flag has Hazard/FallingObject, never Goal, so it cannot advance or save progress.
         var flag = MakeFalling("FakeFlag", SpriteAt("Items/Checkpoints/Checkpoint/Checkpoint (Flag Idle)(64x64).png"), new Vector2(1f, .9f), "fake_flag");
         flag.GetComponent<FallingObject>().liftBeforeFall = 2.4f;
         var flagArt = flag.GetComponentInChildren<SpriteRenderer>();
@@ -49,6 +52,7 @@ public static partial class PlatformerBuilder
     {
         var obj = Box(name, Vector2.zero, size);
         var body = obj.AddComponent<Rigidbody2D>();
+        // Keep the trap suspended until FallingObject activates and changes it to a dynamic body.
         body.bodyType = RigidbodyType2D.Kinematic;
         body.gravityScale = 3f;
         body.constraints = RigidbodyConstraints2D.FreezeRotation;
@@ -67,6 +71,7 @@ public static partial class PlatformerBuilder
         return obj;
     }
 
+    // Alternate safe and collapsing surfaces above spikes with no hidden solid floor underneath.
     static void PlatformPit(float beginning, float end)
     {
         Spikes((beginning + end) / 2, end - beginning, -1.1f);

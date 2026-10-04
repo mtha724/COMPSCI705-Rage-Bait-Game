@@ -1,7 +1,9 @@
 using UnityEngine;
 
+// Listens to gameplay events and selects audiovisual feedback from the current condition's profile.
 public class FXController : MonoBehaviour
 {
+    // Array order must match FXCondition: Low, Normal, Overboard.
     public FXProfile[] profiles;
     public Material particleMaterial;
     public AudioClip stepClip, jumpClip, landingClip, deathClip, goalClip;
@@ -31,13 +33,16 @@ public class FXController : MonoBehaviour
         var main = particles.main;
         main.loop = true;
         main.playOnAwake = false;
+        // World-space particles stay at the event location instead of following the persistent manager.
         main.simulationSpace = ParticleSystemSimulationSpace.World;
         main.maxParticles = 256;
         main.startSpeed = 1.7f;
         main.startSize = .07f;
         main.gravityModifier = .3f;
+        // Feedback animation uses real time, matching the manager's death/goal presentation delays.
         main.useUnscaledTime = true;
         var emission = particles.emission;
+        // Emit only explicit gameplay bursts; no continuous particles should run between events.
         emission.enabled = false;
         var shape = particles.shape;
         shape.shapeType = ParticleSystemShapeType.Circle;
@@ -51,6 +56,7 @@ public class FXController : MonoBehaviour
         manager.GoalReached += Goal;
     }
 
+    // Scene reloads replace the player: detach old events, clear previous effects and subscribe to the new one.
     private void Bind(PlayerMove player)
     {
         if (bound != null)
@@ -86,11 +92,13 @@ public class FXController : MonoBehaviour
             main.startColor = colour;
             for (int i = 0; i < count; i++)
             {
+                // Scatter in the 2D XY plane so particles remain visible in the orthographic camera.
                 Vector2 direction = Random.insideUnitCircle.normalized * Random.Range(.8f, 2.5f);
                 var emit = new ParticleSystem.EmitParams { position = position, velocity = new Vector3(direction.x, direction.y, 0f), startColor = colour };
                 particles.Emit(emit, 1);
             }
         }
+        // Overboard overlaps cues; reduce the second layer's gain to leave some audio headroom.
         for (int i = 0; i < Profile.audioLayers; i++)
         {
             var sound = i > 0 && layerLanding ? landingClip : clip;
@@ -105,6 +113,7 @@ public class FXController : MonoBehaviour
     {
         if (Profile == null) return;
         Message = "You died";
+        // Use the manager's restart delay so every condition shows death feedback for the same duration.
         messageUntil = Time.unscaledTime + manager.restartDelay;
         Fade(new Color(.9f, .03f, .07f, Profile.screenOpacity), manager.restartDelay);
         Feedback(p, Profile.deathParticles, deathClip, manager.condition == FXCondition.Overboard ? Color.red : new Color(1f, .65f, .2f), true);

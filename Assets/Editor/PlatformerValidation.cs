@@ -9,8 +9,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.SceneManagement;
 
+// Editor-only checks of saved layouts and runtime behaviour; temporary input/teleports belong to testing.
 public static class PlatformerValidation
 {
+    // SessionState preserves the test's intent through Unity's assembly/domain reload when entering Play mode.
     const string ActiveKey = "RageGame.ValidationActive";
     static IEnumerator checks;
     static object pending;
@@ -96,6 +98,7 @@ public static class PlatformerValidation
         EditorApplication.update += Tick;
     }
 
+    // Wait for imports/compilation to settle before starting Play mode; batch startup can still be reloading scripts.
     static void Prepare()
     {
         if (EditorApplication.isCompiling || EditorApplication.isUpdating)
@@ -111,6 +114,7 @@ public static class PlatformerValidation
         EditorApplication.EnterPlaymode();
     }
 
+    // Advance the test coroutine from editor updates: Await polls conditions and float yields use real-time delays.
     static void Tick()
     {
         if (!EditorApplication.isPlaying) return;
@@ -155,11 +159,13 @@ public static class PlatformerValidation
         InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
         InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
         manager.condition = FXCondition.Low;
+        // Mark generated CSV files so automated checks can be excluded from participant study data.
         manager.participantId = "automated-validation";
         manager.StartRun();
         yield return new Await(() => manager.State == RunState.Playing);
         yield return .5f;
         Assert(manager.Player.CheckGrounded(), "Player stands on ground");
+        // Dedicated devices exercise the actual Input System without relying on a user's keyboard or editor focus.
         keyboard = InputSystem.AddDevice<Keyboard>("ValidationKeyboard");
         var mouse = InputSystem.AddDevice<Mouse>("ValidationMouse");
         manager.Player.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", keyboard, mouse);
@@ -197,6 +203,7 @@ public static class PlatformerValidation
         var fake = Array.Find(UnityEngine.Object.FindObjectsByType<DisappearingPlatform>(FindObjectsSortMode.None), p => p.activateOnLanding);
         Teleport(new Vector2(fake.transform.position.x, 1.3f));
         yield return .25f;
+        // Hold the test player still briefly so collapse can be inspected before the spike death reloads the scene.
         manager.Player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
         yield return .4f;
         Assert(fake.Activated && !fake.GetComponent<BoxCollider2D>().enabled, "Landing activates and collapses a fake platform");
@@ -264,6 +271,7 @@ public static class PlatformerValidation
             if (choice == 2) Assert(feedback.ScreenColour.a > .3f, "Overboard adds a red screen overlay");
             manager.StopRun("validation_cleanup");
         }
+        // Restore editor input configuration and remove synthetic devices after a successful test run.
         InputSystem.settings.backgroundBehavior = oldBackground;
         InputSystem.settings.editorInputBehaviorInPlayMode = oldEditorInput;
         InputSystem.RemoveDevice(keyboard);

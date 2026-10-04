@@ -7,12 +7,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 
+// Editor-only generation tools split by phase. Running them writes assets; normal gameplay never calls them.
 public static partial class PlatformerBuilder
 {
     const string Prefabs = "Assets/Prefabs";
     const string Art = "Assets/Sprites/character/Assets/";
     static Sprite SpriteAt(string path) => AssetDatabase.LoadAllAssetsAtPath(Art + path).OfType<Sprite>().FirstOrDefault();
 
+    // Extract the existing character and animation into a reusable prefab with the baseline movement settings.
     [MenuItem("Tools/Rage Game/Build Player Prefab")]
     public static void PhaseOne()
     {

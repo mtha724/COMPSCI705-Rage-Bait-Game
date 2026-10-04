@@ -4,6 +4,7 @@ using UnityEngine;
 
 public static partial class PlatformerBuilder
 {
+    // Rebuild shared assets before scenes, then restore FX/menu and logging components on the manager.
     public static void FinalizeProject()
     {
         PrepareArt();
@@ -14,6 +15,7 @@ public static partial class PlatformerBuilder
         Debug.Log("PROJECT_FINALIZED_OK");
     }
     [MenuItem("Tools/Rage Game/Add Session Logging")]
+    // Add logging to the shared manager prefab so it survives level changes with the session totals.
     public static void PhaseFive()
     {
         var prefab = PrefabUtility.LoadPrefabContents(Prefabs + "/GameManager.prefab");

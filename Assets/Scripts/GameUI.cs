@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
+// Builds one persistent menu/HUD for all levels; GameManager owns the actual run and pause state.
 public class GameUI : MonoBehaviour
 {
     private GameManager manager;
@@ -20,10 +21,12 @@ public class GameUI : MonoBehaviour
         manager = GetComponent<GameManager>();
         fx = GetComponent<FXController>();
         font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        // Parent UI to the persistent manager so scene transitions do not rebuild or duplicate the menus.
         var root = new GameObject("GameCanvas", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
         root.transform.SetParent(transform, false);
         root.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
         var scaler = root.GetComponent<CanvasScaler>();
+        // Use a common reference layout so controls remain proportionate across window sizes.
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1600, 900);
         if (FindFirstObjectByType<UnityEngine.EventSystems.EventSystem>() == null)
@@ -32,6 +35,7 @@ public class GameUI : MonoBehaviour
             events.transform.SetParent(transform, false);
         }
         flash = Panel(root.transform, "ScreenFeedback", Color.clear).GetComponent<Image>();
+        // Screen feedback is decorative and must not intercept clicks intended for menu buttons.
         flash.raycastTarget = false;
         message = Label(root.transform, "", new Vector2(0, 0), new Vector2(1200, 160), 44);
         timer = Label(root.transform, "", new Vector2(-560, 385), new Vector2(420, 60), 25);
@@ -43,6 +47,7 @@ public class GameUI : MonoBehaviour
         conditionLabel = Label(menu.transform, "", new Vector2(0, 5), new Vector2(1200, 55), 27);
         for (int i = 0; i < 3; i++)
         {
+            // Capture a separate value per button so each callback selects its own condition.
             FXCondition choice = (FXCondition)i;
             Button(menu.transform, choice.ToString(), new Vector2(-330 + i * 330, -70), () => manager.condition = choice);
         }
@@ -66,6 +71,7 @@ public class GameUI : MonoBehaviour
 
     private void Update()
     {
+        // Keep the HUD visible through death/goal feedback; show the menu only outside an ongoing run.
         bool playing = manager.State == RunState.Playing || manager.State == RunState.Transitioning;
         menu.SetActive(!playing);
         quit.gameObject.SetActive(playing && !paused);
@@ -82,6 +88,7 @@ public class GameUI : MonoBehaviour
 
     private void TogglePause()
     {
+        // Pause only active gameplay, avoiding a frozen transition or a pause menu over the start screen.
         if (manager.State != RunState.Playing) return;
         paused = !paused;
         manager.SetPaused(paused);
@@ -103,6 +110,7 @@ public class GameUI : MonoBehaviour
         Rect(obj, position, size);
         var label = obj.GetComponent<Text>();
         label.font = font; label.fontSize = fontSize; label.color = Color.white; label.alignment = TextAnchor.MiddleCenter;
+        // Button images handle clicks; their text labels must not become separate input targets.
         label.text = text; label.raycastTarget = false;
         return label;
     }

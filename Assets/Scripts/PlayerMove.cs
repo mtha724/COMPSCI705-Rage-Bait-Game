@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// Reads input each frame and applies movement during physics updates; feedback is exposed through events.
 [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(PlayerInput))]
 public class PlayerMove : MonoBehaviour
 {
@@ -35,6 +36,7 @@ public class PlayerMove : MonoBehaviour
         anim = GetComponent<Animator>();
         playerInput = GetComponent<PlayerInput>();
         originalScale = transform.localScale;
+        // Prevent collision forces from tipping the character; interpolation smooths rendered motion.
         body.constraints = RigidbodyConstraints2D.FreezeRotation;
         body.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
@@ -51,6 +53,7 @@ public class PlayerMove : MonoBehaviour
         if (moveAction == null || jumpAction == null) return;
         horizontal = MovementEnabled ? moveAction.ReadValue<Vector2>().x : 0f;
         if (ControlsReversed) horizontal *= -1f;
+        // Buffer a jump briefly so input just before landing can be consumed by the next physics update.
         if (MovementEnabled && jumpAction.WasPressedThisFrame()) jumpBufferedUntil = Time.time + .12f;
         if (Mathf.Abs(horizontal) > .01f)
             transform.localScale = new Vector3(Mathf.Abs(originalScale.x) * Mathf.Sign(horizontal), originalScale.y, originalScale.z);
@@ -64,7 +67,9 @@ public class PlayerMove : MonoBehaviour
     public bool CheckGrounded()
     {
         Bounds bounds = box.bounds;
+        // A narrow probe below the feet avoids treating side-wall contact as standing on the ground.
         Vector2 centre = new Vector2(bounds.center.x, bounds.min.y - .025f);
+        // Reject grounding while rising, even if the feet still overlap the floor after take-off.
         return body.linearVelocity.y <= .1f && Physics2D.OverlapBox(centre,
             new Vector2(bounds.size.x * .8f, .07f), 0f, groundLayer) != null;
     }
@@ -75,8 +80,10 @@ public class PlayerMove : MonoBehaviour
         bool wasGrounded = Grounded;
         Grounded = CheckGrounded();
         if (Grounded && !wasGrounded) Landed?.Invoke(transform.position);
+        // Stronger gravity on descent reduces floatiness; preserve vertical velocity when steering sideways.
         body.gravityScale = gravityScale * (body.linearVelocity.y < 0f ? fallGravityMultiplier : 1f);
         body.linearVelocity = new Vector2(horizontal * speed, Mathf.Max(body.linearVelocity.y, -maxFallSpeed));
+        // Consume the buffered jump once and immediately clear grounding to prevent repeated launches.
         if (Grounded && jumpBufferedUntil >= Time.time)
         {
             jumpBufferedUntil = -1f;
@@ -85,6 +92,7 @@ public class PlayerMove : MonoBehaviour
             if (anim != null) anim.SetTrigger("jump");
             Jumped?.Invoke(transform.position);
         }
+        // Emit footsteps only during grounded movement, with an interval independent of rendering FPS.
         if (Grounded && Mathf.Abs(horizontal) > .01f && Time.time >= nextStep)
         {
             nextStep = Time.time + .24f;
@@ -92,7 +100,9 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    // Reversal lasts for this player instance; reloading a scene creates an unreversed player.
     public void ReverseControls() => ControlsReversed = true;
+    // Freeze input and physics during death, goal feedback and menus. Reloading supplies a fresh enabled player.
     public void StopMovement()
     {
         MovementEnabled = false;
@@ -102,6 +112,7 @@ public class PlayerMove : MonoBehaviour
         body.simulated = false;
     }
 
+    // Editor-only illustration of the ground probe; it does not affect collision detection.
     private void OnDrawGizmosSelected()
     {
         var collider = GetComponent<BoxCollider2D>();

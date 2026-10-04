@@ -11,6 +11,7 @@ public static partial class PlatformerBuilder
     static Sprite groundArt;
     static PhysicsMaterial2D noFriction;
 
+    // Regenerates the initial levels. Preserve the original authored room before replacing generated scenes.
     [MenuItem("Tools/Rage Game/Build First Playable Loop")]
     public static void PhaseTwo()
     {
@@ -34,6 +35,7 @@ public static partial class PlatformerBuilder
         noFriction = AssetDatabase.LoadAssetAtPath<PhysicsMaterial2D>("Assets/PlayerNoFriction.physicsMaterial2D");
     }
 
+    // Rebuild shared gameplay prefabs; later feedback/logging phases reattach their manager components.
     static void SaveCommonPrefabs()
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -115,10 +117,12 @@ public static partial class PlatformerBuilder
         var trigger = Box("OpeningFloorTrigger", new Vector2(x - .7f, 1), new Vector2(1.4f, 2.2f), true);
         var behaviour = trigger.AddComponent<TrapTrigger>();
         behaviour.trapId = "opening_floor";
+        // Save the trigger-to-platform connection into the scene so it survives editor reloads.
         UnityEventTools.AddPersistentListener(behaviour.activated, obj.GetComponent<DisappearingPlatform>().Activate);
         Spikes(x, 1.3f);
     }
 
+    // Writes a new scene layout, replacing any manual edits to that level when this tool is run.
     static void BuildLevel(int number, bool advanced)
     {
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -131,6 +135,7 @@ public static partial class PlatformerBuilder
         spawn.position = new Vector3(0, .6f, 0);
         setup.spawn = spawn;
         var player = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Prefabs + "/Player.prefab"));
+        // Save the player at the spawn marker. Reloading this scene recreates it at this saved position.
         player.transform.position = spawn.position;
         player.GetComponent<SpriteRenderer>().sortingOrder = 5;
         PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Prefabs + "/GameManager.prefab"));
@@ -168,6 +173,7 @@ public static partial class PlatformerBuilder
         EditorSceneManager.SaveScene(scene, "Assets/Levels/Level " + number + ".unity");
     }
 
+    // Register scene names for LoadSceneAsync and keep the preserved prototype out of the playable build.
     static void SetSceneList(int count)
     {
         var scenes = new EditorBuildSettingsScene[count];

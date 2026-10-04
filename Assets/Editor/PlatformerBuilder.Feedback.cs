@@ -7,6 +7,7 @@ using UnityEngine;
 public static partial class PlatformerBuilder
 {
     [MenuItem("Tools/Rage Game/Build Feedback Profiles and Menu")]
+    // Builds presentation-only profiles and original placeholder cues, then adds the persistent menu/FX.
     public static void PhaseFour()
     {
         Directory.CreateDirectory("Assets/Effects");
@@ -43,6 +44,7 @@ public static partial class PlatformerBuilder
             AssetDatabase.CreateAsset(material, "Assets/Effects/Particles.mat");
         }
         material.mainTexture = SpriteAt("Other/Dust Particle.png").texture;
+        // Explicit transparent blending avoids opaque square backgrounds around particle sprites.
         material.SetFloat("_Surface", 1f);
         material.SetFloat("_ZWrite", 0f);
         material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
@@ -52,6 +54,7 @@ public static partial class PlatformerBuilder
         material.renderQueue = 3000;
         EditorUtility.SetDirty(material);
         var prefab = PrefabUtility.LoadPrefabContents(Prefabs + "/GameManager.prefab");
+        // Wait for the menu's Start button so the participant and FX condition are chosen before logging begins.
         prefab.GetComponent<GameManager>().startAutomatically = false;
         var fx = prefab.GetComponent<FXController>() ?? prefab.AddComponent<FXController>();
         fx.profiles = profiles;
@@ -69,6 +72,7 @@ public static partial class PlatformerBuilder
         Debug.Log("PHASE_FOUR_OK");
     }
 
+    // Generate deterministic mono 16-bit PCM WAV placeholders; these are not recordings from Roblox.
     static void WriteCue(string path, int kind)
     {
         const int rate = 22050;
