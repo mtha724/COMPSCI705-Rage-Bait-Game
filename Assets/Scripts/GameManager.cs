@@ -116,7 +116,7 @@ public class GameManager : MonoBehaviour
         Attempt++;
         Record("retry", "death_restart");
         // This fixed scene name implements the game's 'death resets all progress' rule.
-        yield return LoadLevel("Level 1");
+        yield return LoadLevel("Level 1"); // useful for testing
     }
 
     private IEnumerator Advance(string nextScene)
