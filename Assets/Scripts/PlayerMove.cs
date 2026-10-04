@@ -100,8 +100,10 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    // Reversal lasts for this player instance; reloading a scene creates an unreversed player.
+    // Reversal remains active until a restore zone or a fresh scene player resets it.
     public void ReverseControls() => ControlsReversed = true;
+    // A later zone can restore normal controls without replacing the player.
+    public void SetControlsReversed(bool reversed) => ControlsReversed = reversed;
     // Freeze input and physics during death, goal feedback and menus. Reloading supplies a fresh enabled player.
     public void StopMovement()
     {
