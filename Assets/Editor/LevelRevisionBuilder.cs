@@ -15,7 +15,6 @@ public static class LevelRevisionBuilder
     const string Prefabs = "Assets/Prefabs/";
     static Sprite SpriteAt(string path) => AssetDatabase.LoadAllAssetsAtPath(Art + path).OfType<Sprite>().First();
     static Sprite groundSprite;
-    static Sprite flagSprite;
     static PhysicsMaterial2D friction;
     const float ParkourWidth = 10.142704f;
     static GameObject Root(string name) => SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(g => g.name == name);
@@ -25,7 +24,6 @@ public static class LevelRevisionBuilder
     {
         EditorSceneManager.OpenScene("Assets/Levels/Level 2.unity");
         groundSprite = GameObject.Find("FloorBeforePlatforms").GetComponentsInChildren<SpriteRenderer>().First(r => r.name == "Terrain").sprite;
-        flagSprite = UnityEngine.Object.FindFirstObjectByType<Goal>().GetComponentInChildren<SpriteRenderer>().sprite;
         friction = AssetDatabase.LoadAssetAtPath<PhysicsMaterial2D>("Assets/PlayerNoFriction.physicsMaterial2D");
         SaveParkourTemplate();
         SaveTrapPrefabs();
@@ -133,12 +131,11 @@ public static class LevelRevisionBuilder
         floor.transform.SetParent(fake.transform, true);
         foreach (var root in SceneManager.GetActiveScene().GetRootGameObjects().Where(g => g.GetComponent<Hazard>() != null && g != hole).ToArray())
             root.transform.SetParent(fake.transform, true);
-        var flag = Image("FakeFlagArtwork", flagSprite, new Vector2(0, 1f), new Vector2(2, 2), fake.transform, 3);
+        FlagStop(fake.transform, .85f);
         var trigger = Box("FakeFlagTrigger", new Vector2(-1.2f, 1.1f), new Vector2(.6f, 3.2f), true).AddComponent<TrapTrigger>();
         trigger.transform.SetParent(fake.transform, true);
         trigger.trapId = "escaping_flag";
         behaviour.floor = floor.GetComponent<DisappearingPlatform>();
-        behaviour.flag = flag.transform;
         UnityEventTools.AddPersistentListener(trigger.activated, behaviour.Activate);
         PrefabUtility.SaveAsPrefabAsset(fake, Prefabs + "EscapingFlagTrap.prefab");
         var popup = Box("PopupSpikes", new Vector2(0, .22f), new Vector2(.75f, .4f), true);
@@ -281,7 +278,76 @@ public static class LevelRevisionBuilder
         Floor("GoalLanding", 48f, 57f);
         for (int i = 0; i < centres.Length; i++)
             Place("EscapingFlagTrap", new Vector2(centres[i], 0), "FakeFlagTrap_" + (i + 1));
+        ConfigureRunningFlag(55f);
         Finish(55f);
+    }
+
+    // Migrate only Level 4, preserving its authored terrain, parkour and the other five saved scenes.
+    public static void UseOneFlagInLevelFour()
+    {
+        string path = Prefabs + "EscapingFlagTrap.prefab";
+        var template = PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var oldArtwork = template.transform.Find("FakeFlagArtwork");
+            if (oldArtwork != null) UnityEngine.Object.DestroyImmediate(oldArtwork.gameObject);
+            FlagStop(template.transform, .85f);
+            PrefabUtility.SaveAsPrefabAsset(template, path);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(template); }
+        EditorSceneManager.OpenScene("Assets/Levels/Level 4.unity");
+        ConfigureRunningFlag(UnityEngine.Object.FindFirstObjectByType<LevelSetup>().travelDistance);
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+        AssetDatabase.SaveAssets();
+        Debug.Log("SINGLE_FLAG_LEVEL_FOUR_OK");
+    }
+
+    static Transform FlagStop(Transform trap, float height)
+    {
+        var marker = trap.Find("FlagStop");
+        if (marker == null)
+        {
+            marker = new GameObject("FlagStop").transform;
+            marker.SetParent(trap, false);
+        }
+        marker.localPosition = new Vector3(0f, height, 0f);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(marker);
+        return marker;
+    }
+
+    static void ConfigureRunningFlag(float finishX)
+    {
+        var goal = UnityEngine.Object.FindFirstObjectByType<Goal>();
+        var traps = UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).OrderBy(t => t.transform.position.x).ToArray();
+        if (traps.Length != 4) throw new InvalidOperationException("Level 4 needs four floor triggers for its flag sequence.");
+        float height = goal.transform.position.y;
+        var runner = goal.GetComponent<RunningFlag>() ?? goal.gameObject.AddComponent<RunningFlag>();
+        var stops = traps.Select(t => FlagStop(t.transform, height)).ToArray();
+        var setup = UnityEngine.Object.FindFirstObjectByType<LevelSetup>();
+        var finish = setup.transform.Find("FlagFinishStop");
+        if (finish == null)
+        {
+            finish = new GameObject("FlagFinishStop").transform;
+            finish.SetParent(setup.transform, false);
+        }
+        finish.position = new Vector3(finishX, height, 0f);
+        // Destinations belong to stationary markers, so moving the flag never moves its own target.
+        runner.nextStops = stops.Skip(1).Concat(new[] { finish }).ToArray();
+        runner.escapeSpeed = 9f;
+        goal.transform.position = stops[0].position;
+        goal.enabled = false;
+        var goalCollider = goal.GetComponent<Collider2D>();
+        goalCollider.enabled = false;
+        for (int i = 0; i < traps.Length; i++)
+        {
+            traps[i].runner = runner;
+            traps[i].stageIndex = i;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(traps[i]);
+        }
+        PrefabUtility.RecordPrefabInstancePropertyModifications(goal.transform);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(goal);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(goalCollider);
+        PrefabUtility.RecordPrefabInstancePropertyModifications(runner);
     }
 
     static void VisibleSpikes(float x)
@@ -347,7 +413,7 @@ public static class LevelRevisionBuilder
         for (int level = 1; level <= 5; level++)
         {
             EditorSceneManager.OpenScene("Assets/Levels/Level " + level + ".unity");
-            float length = UnityEngine.Object.FindFirstObjectByType<Goal>().transform.position.x;
+            float length = UnityEngine.Object.FindFirstObjectByType<LevelSetup>().travelDistance;
             int width = 2048;
             int height = Mathf.RoundToInt(width * 8.5f / (length + 4f));
             var camera = Camera.main;

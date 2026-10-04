@@ -53,7 +53,12 @@ public static partial class PlatformerValidation
             if (level == 4)
             {
                 var flags = UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).OrderBy(f => f.transform.position.x).ToArray();
-                Assert(flags.Length == 4 && flags.All(f => f.GetComponentInChildren<Goal>() == null), "Four fake flags cannot advance or save progress");
+                var runner = UnityEngine.Object.FindFirstObjectByType<RunningFlag>();
+                Assert(flags.Length == 4 && runner != null && flags.All(f => f.runner == runner), "Four floor traps share one running flag");
+                Assert(flags.Select(f => f.stageIndex).SequenceEqual(new[] { 0, 1, 2, 3 }), "Floor triggers advance the flag in route order");
+                Assert(runner.nextStops.Select(t => t.position.x).SequenceEqual(new[] { 17f, 26f, 47f, 55f }), "The flag escapes to each lure and the final finish");
+                Assert(!goal.enabled && !goal.GetComponent<Collider2D>().enabled && goal.transform.position.x == 8f, "The saved flag begins as a harmless lure");
+                Assert(UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None).Count(r => r.name.EndsWith("FlagArtwork")) == 1, "Level 4 contains only one visible flag");
                 float parkourX = GameObject.Find("ParkourSection").transform.position.x;
                 Assert(flags[2].transform.position.x < parkourX && flags[3].transform.position.x > parkourX + 10f, "Three flag traps precede parkour and one follows it");
             }
@@ -160,16 +165,49 @@ public static partial class PlatformerValidation
         Load("Level 4");
         yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 4");
         var lures = UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).OrderBy(f => f.transform.position.x).ToArray();
-        foreach (var lure in lures)
+        var runningFlag = UnityEngine.Object.FindFirstObjectByType<RunningFlag>();
+        var flagObject = runningFlag.gameObject;
+        Teleport(new Vector2(runningFlag.transform.position.x, 1.2f));
+        Freeze(manager, true);
+        yield return .12f;
+        Assert(manager.CurrentLevel == "Level 4" && runningFlag.CompletedStages == 0 && !runningFlag.GoalReady, "Touching the initial flag does not advance the level");
+        lures[3].Activate();
+        Assert(runningFlag.CompletedStages == 0 && !lures[3].Activated && !lures[3].floor.Activated, "Out-of-order floor activation cannot skip flag stages");
+        for (int i = 0; i < lures.Length; i++)
         {
-            float startX = lure.flag.position.x;
+            var lure = lures[i];
+            float startX = runningFlag.transform.position.x;
             Teleport(new Vector2(lure.transform.position.x - 1.2f, 1.2f));
-            Freeze(manager, true);
             yield return .3f;
-            Assert(lure.Activated && !lure.floor.GetComponent<Collider2D>().enabled && lure.flag.position.x > startX + 1f,
-                "Fake flag " + lure.name + " opens its floor and escapes right");
+            Assert(lure.Activated && !lure.floor.GetComponent<Collider2D>().enabled && runningFlag.transform.position.x > startX + 1f,
+                "Floor " + lure.name + " opens while the shared flag escapes right");
+            if (i == 0)
+            {
+                Assert(!runningFlag.TryAdvance(0) && runningFlag.CompletedStages == 1, "Repeated activation does not advance the flag twice");
+                manager.SetPaused(true);
+                Vector3 flagPosition = runningFlag.transform.position;
+                yield return .15f;
+                Assert(runningFlag.transform.position == flagPosition, "Pause freezes the running flag");
+                manager.SetPaused(false);
+            }
+            yield return new Await(() => !runningFlag.Moving);
+            Assert(runningFlag.gameObject == flagObject && runningFlag.CompletedStages == i + 1 &&
+                Vector3.Distance(runningFlag.transform.position, runningFlag.nextStops[i].position) < .001f,
+                "The same flag reaches escape stop " + (i + 1));
+            if (i < lures.Length - 1)
+                Assert(!runningFlag.GoalReady && !runningFlag.GetComponent<Collider2D>().enabled, "Escape stop " + (i + 1) + " is still a fake goal");
         }
-        Assert(manager.CurrentLevel == "Level 4" && manager.State == RunState.Playing, "Fake flags neither save nor advance progress");
+        Assert(manager.CurrentLevel == "Level 4" && runningFlag.GoalReady && runningFlag.GetComponent<Goal>().enabled && runningFlag.GetComponent<Collider2D>().enabled,
+            "The final escape arms the same flag as the genuine goal");
+        Teleport(new Vector2(runningFlag.transform.position.x, .8f));
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 5");
+        Assert(true, "Reaching the running flag at the finish advances to Level 5");
+        Load("Level 4");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 4");
+        runningFlag = UnityEngine.Object.FindFirstObjectByType<RunningFlag>();
+        Assert(runningFlag.CompletedStages == 0 && runningFlag.transform.position.x == 8f && !runningFlag.GoalReady &&
+            UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).All(t => !t.Activated && !t.floor.Activated),
+            "Reloading Level 4 resets the single flag and all four floors");
         Load("Level 5");
         yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 5");
         Pair(manager, mouse);

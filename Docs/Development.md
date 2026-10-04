@@ -11,7 +11,7 @@ The build includes six scenes in order. The default death destination is Level 1
 | Level 1 | 25 | 5 s | Opening floor with an image-free lethal hole |
 | Level 2 | 40.85 | 8.17 s | Seven authored platforms, three fake, then an opening hole before the flag |
 | Level 3 | 45 | 9 s | Eight falling bricks, seven popup spike groups, then an opening hole |
-| Level 4 | 55 | 11 s | Three floor-opening escaping flags, copied parkour, then a fourth escaping flag |
+| Level 4 | 55 | 11 s | One flag escapes three opening floors, crosses the copied parkour, then escapes a fourth floor to become the finish |
 | Level 5 | 65 | 13 s | Reversed controls, chasing saw, visible spikes, copied parkour, visible hole, then normal controls |
 | Level 6 | 75 | 15 s | Fake platforms, falling ceiling, reversed controls |
 
@@ -25,7 +25,8 @@ Travel targets exclude jumps, trap learning, deaths and repeated earlier levels.
 - OpeningFloor / FakePlatform: disappearance delay; fake platforms activate on a top landing.
 - FallingCeiling: falling delay and initial downward velocity. Each approach trigger activates once.
 - PopupSpikes: exposure/hidden durations, rise time, activation distance and random seed. The first four groups use regular cycles; the last three use seeded irregular intervals.
-- EscapingFlagTrap: linked floor and flag, escape distance and speed. It has no Goal component.
+- EscapingFlagTrap: linked floor, shared RunningFlag and zero-based stage index. The four triggers open their own floors and advance the same flag in order.
+- RunningFlag on Level 4's GoalFlag: four Next Stops and escape speed. The flag moves from x=8 to 17, 26, 47 and finally 55; its goal collider activates only after the final movement finishes. Scene reload resets the whole sequence.
 - ChasingSaw: speed, vertical tracking limits and artwork. Its speed starts below the player run speed.
 - ReverseZone: Restore Normal Controls is enabled only on the narrow trigger after Level 5's final hole.
 - HoleHazard: image-free trigger collider with death cause hole. Disabling it prevents the hole from killing the player.

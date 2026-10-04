@@ -679,6 +679,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1470167218285505009, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+      propertyPath: runner
+      value: 
+      objectReference: {fileID: 311211123}
     - target: {fileID: 5624841118189070169, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
       propertyPath: m_Name
       value: FakeFlagTrap_1
@@ -1196,6 +1200,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1470167218285505009, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+      propertyPath: runner
+      value: 
+      objectReference: {fileID: 311211123}
+    - target: {fileID: 1470167218285505009, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+      propertyPath: stageIndex
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5624841118189070169, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
       propertyPath: m_Name
       value: FakeFlagTrap_2
@@ -1245,6 +1257,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+--- !u!4 &284141465 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 421229577206220445, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+  m_PrefabInstance: {fileID: 284141464}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &301253539
 GameObject:
   m_ObjectHideFlags: 0
@@ -1348,6 +1365,7 @@ GameObject:
   - component: {fileID: 311211122}
   - component: {fileID: 311211121}
   - component: {fileID: 311211120}
+  - component: {fileID: 311211123}
   m_Layer: 0
   m_Name: GoalFlag
   m_TagString: Untagged
@@ -1362,7 +1380,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311211119}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fed65c67954f64c41a9574855c237fd3, type: 3}
   m_Name: 
@@ -1375,7 +1393,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 311211119}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -1423,13 +1441,31 @@ Transform:
   m_GameObject: {fileID: 311211119}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 55, y: 0.85, z: 0}
+  m_LocalPosition: {x: 8, y: 0.85, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1411240817}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &311211123
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 311211119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1df045372510ac64d8425c3bc8462790, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunningFlag
+  nextStops:
+  - {fileID: 284141465}
+  - {fileID: 1749418856}
+  - {fileID: 1671064562}
+  - {fileID: 767758451}
+  escapeSpeed: 9
 --- !u!1 &364939996
 GameObject:
   m_ObjectHideFlags: 0
@@ -2809,6 +2845,37 @@ Transform:
   - {fileID: 1643212671}
   - {fileID: 54481996}
   m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &767758450
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 767758451}
+  m_Layer: 0
+  m_Name: FlagFinishStop
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &767758451
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 767758450}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 55, y: 0.85, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1301517976}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &770568307
 GameObject:
@@ -4770,7 +4837,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 767758451}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1356437387
@@ -6460,6 +6528,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1470167218285505009, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+      propertyPath: runner
+      value: 
+      objectReference: {fileID: 311211123}
+    - target: {fileID: 1470167218285505009, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+      propertyPath: stageIndex
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 5624841118189070169, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
       propertyPath: m_Name
       value: FakeFlagTrap_4
@@ -6509,6 +6585,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+--- !u!4 &1671064562 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 421229577206220445, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+  m_PrefabInstance: {fileID: 1671064561}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1681864207
 GameObject:
   m_ObjectHideFlags: 0
@@ -7073,6 +7154,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1470167218285505009, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+      propertyPath: runner
+      value: 
+      objectReference: {fileID: 311211123}
+    - target: {fileID: 1470167218285505009, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+      propertyPath: stageIndex
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 5624841118189070169, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
       propertyPath: m_Name
       value: FakeFlagTrap_3
@@ -7122,6 +7211,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+--- !u!4 &1749418856 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 421229577206220445, guid: 1e9fb1ce19f94574a95290f096161c06, type: 3}
+  m_PrefabInstance: {fileID: 1749418855}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1754292214
 GameObject:
   m_ObjectHideFlags: 0
