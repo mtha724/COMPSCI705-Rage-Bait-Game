@@ -1,69 +1,106 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(PlayerInput))]
 public class PlayerMove : MonoBehaviour
 {
-    private Rigidbody2D body;
-    private Animator anim;
-    private bool grounded;
-    private PlayerInput playerInput;
     public float speed = 5f;
-    public float jumpForce = 5f;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public float jumpForce = 9f;
+    public LayerMask groundLayer = 1 << 6;
+    public float gravityScale = 3f;
+    public float fallGravityMultiplier = 1.4f;
+    public float maxFallSpeed = 25f;
+    public bool ControlsReversed { get; private set; }
+    public bool Grounded { get; private set; }
+    public bool MovementEnabled { get; private set; } = true;
+    public event Action<Vector3> Jumped;
+    public event Action<Vector3> Landed;
+    public event Action<Vector3> Stepped;
+    private Rigidbody2D body;
+    private BoxCollider2D box;
+    private Animator anim;
+    private InputAction moveAction;
+    private InputAction jumpAction;
+    private float horizontal;
+    private float jumpBufferedUntil = -1f;
+    private float nextStep;
+    private Vector3 originalScale;
+
+    private void Awake()
     {
-        // grab references for the components
-        playerInput = GetComponent<PlayerInput>();
         body = GetComponent<Rigidbody2D>();
+        box = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
+        var input = GetComponent<PlayerInput>();
+        moveAction = input.actions.FindAction("Move", true);
+        jumpAction = input.actions.FindAction("Jump", true);
+        originalScale = transform.localScale;
+        body.constraints = RigidbodyConstraints2D.FreezeRotation;
+        body.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        Jump();
-        Move();
-    }
-
-    void Jump()
-    {
-        if (playerInput.actions["Jump"].triggered && grounded)
+        horizontal = MovementEnabled ? moveAction.ReadValue<Vector2>().x : 0f;
+        if (ControlsReversed) horizontal *= -1f;
+        if (MovementEnabled && jumpAction.WasPressedThisFrame()) jumpBufferedUntil = Time.time + .12f;
+        if (Mathf.Abs(horizontal) > .01f)
+            transform.localScale = new Vector3(Mathf.Abs(originalScale.x) * Mathf.Sign(horizontal), originalScale.y, originalScale.z);
+        if (anim != null)
         {
+            anim.SetBool("run", MovementEnabled && Mathf.Abs(horizontal) > .01f);
+            anim.SetBool("grounded", Grounded);
+        }
+    }
+
+    public bool CheckGrounded()
+    {
+        Bounds bounds = box.bounds;
+        Vector2 centre = new Vector2(bounds.center.x, bounds.min.y - .025f);
+        return body.linearVelocity.y <= .1f && Physics2D.OverlapBox(centre,
+            new Vector2(bounds.size.x * .8f, .07f), 0f, groundLayer) != null;
+    }
+
+    private void FixedUpdate()
+    {
+        bool wasGrounded = Grounded;
+        Grounded = CheckGrounded();
+        if (Grounded && !wasGrounded) Landed?.Invoke(transform.position);
+        if (!MovementEnabled) return;
+        body.gravityScale = gravityScale * (body.linearVelocity.y < 0f ? fallGravityMultiplier : 1f);
+        body.linearVelocity = new Vector2(horizontal * speed, Mathf.Max(body.linearVelocity.y, -maxFallSpeed));
+        if (Grounded && jumpBufferedUntil >= Time.time)
+        {
+            jumpBufferedUntil = -1f;
+            Grounded = false;
             body.linearVelocity = new Vector2(body.linearVelocity.x, jumpForce);
-            anim.SetTrigger("jump");
-            grounded = false;
+            if (anim != null) anim.SetTrigger("jump");
+            Jumped?.Invoke(transform.position);
+        }
+        if (Grounded && Mathf.Abs(horizontal) > .01f && Time.time >= nextStep)
+        {
+            nextStep = Time.time + .24f;
+            Stepped?.Invoke(transform.position - Vector3.up * .3f);
         }
     }
 
-    void Move()
+    public void ReverseControls() => ControlsReversed = true;
+    public void StopMovement()
     {
-        float horizontalInput = playerInput.actions["Move"].ReadValue<Vector2>().x;
-
-
-        // flip player when moving left or right
-        if (horizontalInput > 0.01f)
-        {
-            transform.localScale = new Vector3(3, 3, 3);
-        }
-        else if (horizontalInput < -0.01f)
-        {
-            transform.localScale = new Vector3(-3, 3, 3);
-        }
-
-
-            Vector2 moveInput = playerInput.actions["Move"].ReadValue<Vector2>();
-        body.linearVelocity = new Vector2(moveInput.x * speed, body.linearVelocity.y);
-
-        // set animator parameters
-        anim.SetBool("run", horizontalInput != 0);
-        anim.SetBool("grounded", grounded);
+        MovementEnabled = false;
+        horizontal = 0f;
+        jumpBufferedUntil = -1f;
+        body.linearVelocity = Vector2.zero;
+        body.simulated = false;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnDrawGizmosSelected()
     {
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            grounded = true;
-        }
+        var collider = GetComponent<BoxCollider2D>();
+        if (collider == null) return;
+        Bounds bounds = collider.bounds;
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireCube(new Vector3(bounds.center.x, bounds.min.y - .025f, 0f), new Vector3(bounds.size.x * .8f, .07f, 0f));
     }
 }
