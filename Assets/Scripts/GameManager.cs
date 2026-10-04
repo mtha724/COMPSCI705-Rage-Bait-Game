@@ -25,6 +25,7 @@ public class GameManager : MonoBehaviour
     public double ElapsedSeconds => SessionStartedAt > 0 ? Time.realtimeSinceStartupAsDouble - SessionStartedAt : 0;
     public string CurrentLevel => SceneManager.GetActiveScene().name;
     public PlayerMove Player { get; private set; }
+    public bool Paused { get; private set; }
     public event Action<PlayerMove> PlayerBound;
     public event Action<Vector3> Died;
     public event Action<Vector3> GoalReached;
@@ -47,7 +48,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (State != RunState.Playing) return;
+        if (State != RunState.Playing || Paused) return;
         ActiveSeconds += Time.unscaledDeltaTime;
         LevelSeconds += Time.unscaledDeltaTime;
     }
@@ -56,6 +57,8 @@ public class GameManager : MonoBehaviour
     {
         if (State == RunState.Playing || State == RunState.Transitioning) return;
         Deaths = 0;
+        Paused = false;
+        Time.timeScale = 1f;
         Attempt = 1;
         FurthestLevel = 1;
         ActiveSeconds = LevelSeconds = 0f;
@@ -131,10 +134,19 @@ public class GameManager : MonoBehaviour
 
     public void Record(string kind, string detail) => Recorded?.Invoke(kind, detail);
 
+    public void SetPaused(bool pause)
+    {
+        Paused = pause;
+        Time.timeScale = pause ? 0f : 1f;
+        Record(pause ? "pause" : "resume", "");
+    }
+
     public void StopRun()
     {
         if (State != RunState.Playing && State != RunState.Transitioning) return;
         StopAllCoroutines();
+        Paused = false;
+        Time.timeScale = 1f;
         if (Player != null) Player.StopMovement();
         State = RunState.Stopped;
         Record("session_end", "voluntary_quit");
