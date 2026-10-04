@@ -10,7 +10,7 @@ public class DisappearingPlatform : MonoBehaviour
     {
         if (Activated) return;
         Activated = true;
-        GameManager.Instance?.Record("trap", gameObject.name);
+        if (activateOnLanding) GameManager.Instance?.Record("trap", gameObject.name);
         StartCoroutine(Disappear());
     }
     private IEnumerator Disappear()

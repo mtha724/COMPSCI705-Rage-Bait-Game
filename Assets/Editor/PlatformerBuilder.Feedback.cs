@@ -43,6 +43,13 @@ public static partial class PlatformerBuilder
             AssetDatabase.CreateAsset(material, "Assets/Effects/Particles.mat");
         }
         material.mainTexture = SpriteAt("Other/Dust Particle.png").texture;
+        material.SetFloat("_Surface", 1f);
+        material.SetFloat("_ZWrite", 0f);
+        material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+        material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        material.SetOverrideTag("RenderType", "Transparent");
+        material.renderQueue = 3000;
         EditorUtility.SetDirty(material);
         var prefab = PrefabUtility.LoadPrefabContents(Prefabs + "/GameManager.prefab");
         prefab.GetComponent<GameManager>().startAutomatically = false;

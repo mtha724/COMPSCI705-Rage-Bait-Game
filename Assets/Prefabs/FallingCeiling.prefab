@@ -123,6 +123,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FallingObject
   delay: 0.1
   initialDownSpeed: 1
+  liftBeforeFall: 0
 --- !u!114 &8148432386201161618
 MonoBehaviour:
   m_ObjectHideFlags: 0

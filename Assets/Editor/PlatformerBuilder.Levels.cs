@@ -80,7 +80,11 @@ public static partial class PlatformerBuilder
         obj.layer = LayerMask.NameToLayer("Ground");
         obj.tag = "Ground";
         obj.GetComponent<BoxCollider2D>().sharedMaterial = noFriction;
-        var art = Visual("Terrain", groundArt, obj.transform.position, new Vector2(width, 1.5f));
+        var soil = Visual("Soil", SpriteAt("Background/Brown.png"), new Vector2(centre, top - 1f), new Vector2(width, 1f));
+        soil.GetComponent<SpriteRenderer>().color = new Color(.65f, .35f, .24f);
+        soil.transform.SetParent(obj.transform, true);
+        var art = Visual("Terrain", groundArt, new Vector2(centre, top - .25f), new Vector2(width, groundArt.bounds.size.y));
+        art.transform.localScale = new Vector3(1f, .5f / groundArt.bounds.size.y, 1f);
         art.transform.SetParent(obj.transform, true);
         return obj;
     }

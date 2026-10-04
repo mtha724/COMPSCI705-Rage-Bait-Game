@@ -34,7 +34,11 @@ public static partial class PlatformerBuilder
         PrefabUtility.SaveAsPrefabAsset(platform, Prefabs + "/RealPlatform.prefab");
         var ceiling = MakeFalling("FallingCeiling", SpriteAt("Traps/Blocks/Idle.png"), new Vector2(1.7f, .55f), "ceiling");
         PrefabUtility.SaveAsPrefabAsset(ceiling, Prefabs + "/FallingCeiling.prefab");
-        var flag = MakeFalling("FakeFlag", SpriteAt("Items/Checkpoints/Checkpoint/Checkpoint (Flag Idle)(64x64).png"), new Vector2(1f, 1.6f), "fake_flag");
+        var flag = MakeFalling("FakeFlag", SpriteAt("Items/Checkpoints/Checkpoint/Checkpoint (Flag Idle)(64x64).png"), new Vector2(1f, .9f), "fake_flag");
+        flag.GetComponent<FallingObject>().liftBeforeFall = 2.4f;
+        var flagArt = flag.GetComponentInChildren<SpriteRenderer>();
+        flagArt.size = new Vector2(2f, 2f);
+        flagArt.transform.localPosition = new Vector3(0, .55f, 0);
         PrefabUtility.SaveAsPrefabAsset(flag, Prefabs + "/FakeFlag.prefab");
         var reverse = Box("ReverseZone", Vector2.zero, new Vector2(1f, 4f), true);
         reverse.AddComponent<ReverseZone>();
@@ -69,7 +73,8 @@ public static partial class PlatformerBuilder
         for (int i = 0; i < 5; i++)
         {
             float x = beginning + 1f + i * 1.9f;
-            PlacePrefab(i == 1 || i == 3 ? "FakePlatform" : "RealPlatform", new Vector2(x, .4f));
+            var platform = PlacePrefab(i == 1 || i == 3 ? "FakePlatform" : "RealPlatform", new Vector2(x, .4f));
+            platform.name += "_" + (i + 1);
         }
     }
 
@@ -97,7 +102,7 @@ public static partial class PlatformerBuilder
         if (number == 4)
         {
             // A flag that looks reachable but drops onto the approaching player.
-            FallingTrap("FakeFlag", 23f, 2.8f, 21.8f);
+            FallingTrap("FakeFlag", 23f, .45f, 21.8f);
         }
         if (number == 5) PlacePrefab("ReverseZone", new Vector2(15, 1.2f));
         if (number == 6)

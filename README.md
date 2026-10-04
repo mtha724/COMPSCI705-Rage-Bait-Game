@@ -13,7 +13,10 @@ Note that if you encounter 403 error switch to a different browser and try the s
 Clone the project
 
 ```
-git clone https://github.com/mtha724/COMPSCI705-Rage-Bait-Game.git 
+git clone https://github.com/mtha724/COMPSCI705-Rage-Bait-Game.git
 ```
 
-In Unity Hub click `add` select `add from disk` and open. 
+In Unity Hub click `add` select `add from disk` and open.
+
+## Playable prototype
+Open Assets/Levels/Level 1.unity in Unity 6.6, press Play, select a feedback condition and click Start. See [development instructions](Docs/Development.md) and [study design notes](Docs/StudyDesign.md).

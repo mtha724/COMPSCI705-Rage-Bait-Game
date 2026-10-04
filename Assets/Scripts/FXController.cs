@@ -60,6 +60,8 @@ public class FXController : MonoBehaviour
             bound.Stepped -= Step;
         }
         bound = player;
+        particles.Clear();
+        audioSource.Stop();
         bound.Jumped += Jump;
         bound.Landed += Land;
         bound.Stepped += Step;
@@ -79,11 +81,15 @@ public class FXController : MonoBehaviour
         if (Profile == null) return;
         if (count > 0)
         {
-            particles.transform.position = position;
             var main = particles.main;
             main.startLifetime = Profile.particleLifetime;
             main.startColor = colour;
-            particles.Emit(count);
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 direction = Random.insideUnitCircle.normalized * Random.Range(.8f, 2.5f);
+                var emit = new ParticleSystem.EmitParams { position = position, velocity = new Vector3(direction.x, direction.y, 0f), startColor = colour };
+                particles.Emit(emit, 1);
+            }
         }
         for (int i = 0; i < Profile.audioLayers; i++)
         {

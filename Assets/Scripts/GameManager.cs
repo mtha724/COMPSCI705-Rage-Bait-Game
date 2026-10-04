@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     public bool showTimer;
     public float restartDelay = .85f;
     public float goalDelay = .65f;
+    public float sessionLimitSeconds;
     public RunState State { get; private set; } = RunState.Ready;
     public int Deaths { get; private set; }
     public int Attempt { get; private set; }
@@ -31,6 +32,9 @@ public class GameManager : MonoBehaviour
     public event Action<Vector3> GoalReached;
     public event Action<string, string> Recorded;
 
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics() => Instance = null;
+
     private void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -41,9 +45,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (Instance != this) return;
         BindPlayer();
-        if (startAutomatically) StartRun();
-        else if (Player != null) Player.GetComponent<Rigidbody2D>().simulated = false;
+        if (startAutomatically && State == RunState.Ready) StartRun();
     }
 
     private void Update()
@@ -51,6 +55,7 @@ public class GameManager : MonoBehaviour
         if (State != RunState.Playing || Paused) return;
         ActiveSeconds += Time.unscaledDeltaTime;
         LevelSeconds += Time.unscaledDeltaTime;
+        if (sessionLimitSeconds > 0f && ActiveSeconds >= sessionLimitSeconds) StopRun("session_limit");
     }
 
     public void StartRun()
@@ -129,6 +134,7 @@ public class GameManager : MonoBehaviour
     private void BindPlayer()
     {
         Player = FindFirstObjectByType<PlayerMove>();
+        if (Player != null && (State == RunState.Ready || State == RunState.Stopped || State == RunState.Completed)) Player.StopMovement();
         if (Player != null) PlayerBound?.Invoke(Player);
     }
 
@@ -141,7 +147,7 @@ public class GameManager : MonoBehaviour
         Record(pause ? "pause" : "resume", "");
     }
 
-    public void StopRun()
+    public void StopRun(string reason = "voluntary_quit")
     {
         if (State != RunState.Playing && State != RunState.Transitioning) return;
         StopAllCoroutines();
@@ -149,7 +155,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         if (Player != null) Player.StopMovement();
         State = RunState.Stopped;
-        Record("session_end", "voluntary_quit");
+        Record("session_end", reason);
     }
 
     private void OnApplicationQuit()

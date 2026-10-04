@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1993742663720732386}
   - component: {fileID: 2546666009622337521}
-  - component: {fileID: 6982388198680453832}
-  - component: {fileID: 3269502021120007337}
+  - component: {fileID: 148955325974127154}
+  - component: {fileID: 8982057473785057388}
+  - component: {fileID: 6792550536624092807}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -52,7 +53,8 @@ MonoBehaviour:
   showTimer: 0
   restartDelay: 0.85
   goalDelay: 0.65
---- !u!114 &6982388198680453832
+  sessionLimitSeconds: 0
+--- !u!114 &148955325974127154
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -74,7 +76,7 @@ MonoBehaviour:
   landingClip: {fileID: 8300000, guid: 1c03756d2bb221a4ab0ee85d43b0f910, type: 3}
   deathClip: {fileID: 8300000, guid: b200d30951c34614abd341a65eed0dc9, type: 3}
   goalClip: {fileID: 8300000, guid: 9e6d81f6b19e77640993711d0fff3883, type: 3}
---- !u!114 &3269502021120007337
+--- !u!114 &8982057473785057388
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -86,3 +88,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a20e9f31bebc244186e33d936825039, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameUI
+--- !u!114 &6792550536624092807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7488664891788219577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f69c5df57fa0d0f4c95c5608a7fa790c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RunLogger

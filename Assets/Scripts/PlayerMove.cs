@@ -22,6 +22,7 @@ public class PlayerMove : MonoBehaviour
     private Animator anim;
     private InputAction moveAction;
     private InputAction jumpAction;
+    private PlayerInput playerInput;
     private float horizontal;
     private float jumpBufferedUntil = -1f;
     private float nextStep;
@@ -32,16 +33,22 @@ public class PlayerMove : MonoBehaviour
         body = GetComponent<Rigidbody2D>();
         box = GetComponent<BoxCollider2D>();
         anim = GetComponent<Animator>();
-        var input = GetComponent<PlayerInput>();
-        moveAction = input.actions.FindAction("Move", true);
-        jumpAction = input.actions.FindAction("Jump", true);
+        playerInput = GetComponent<PlayerInput>();
         originalScale = transform.localScale;
         body.constraints = RigidbodyConstraints2D.FreezeRotation;
         body.interpolation = RigidbodyInterpolation2D.Interpolate;
     }
 
+    private void Start()
+    {
+        // PlayerInput creates/enables its private action copy during OnEnable.
+        moveAction = playerInput.actions.FindAction("Move", true);
+        jumpAction = playerInput.actions.FindAction("Jump", true);
+    }
+
     private void Update()
     {
+        if (moveAction == null || jumpAction == null) return;
         horizontal = MovementEnabled ? moveAction.ReadValue<Vector2>().x : 0f;
         if (ControlsReversed) horizontal *= -1f;
         if (MovementEnabled && jumpAction.WasPressedThisFrame()) jumpBufferedUntil = Time.time + .12f;
@@ -64,10 +71,10 @@ public class PlayerMove : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!MovementEnabled) return;
         bool wasGrounded = Grounded;
         Grounded = CheckGrounded();
         if (Grounded && !wasGrounded) Landed?.Invoke(transform.position);
-        if (!MovementEnabled) return;
         body.gravityScale = gravityScale * (body.linearVelocity.y < 0f ? fallGravityMultiplier : 1f);
         body.linearVelocity = new Vector2(horizontal * speed, Mathf.Max(body.linearVelocity.y, -maxFallSpeed));
         if (Grounded && jumpBufferedUntil >= Time.time)
