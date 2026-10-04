@@ -119,6 +119,113 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &267476860
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 267476863}
+  - component: {fileID: 267476862}
+  - component: {fileID: 267476861}
+  m_Layer: 0
+  m_Name: FallingCeilingTrigger (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &267476861
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267476860}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c69cc5cd9c84f0f42af6bfca0f05a588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapTrigger
+  activated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1295712663}
+        m_TargetAssemblyTypeName: FallingObject, Assembly-CSharp
+        m_MethodName: Activate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  trapId: FallingCeiling
+--- !u!61 &267476862
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267476860}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.65, y: 2.5}
+  m_EdgeRadius: 0
+--- !u!4 &267476863
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 267476860}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 24.287535, y: 1.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &311211119
 GameObject:
   m_ObjectHideFlags: 0
@@ -292,6 +399,205 @@ Transform:
   - {fileID: 2124898509}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &418237597
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4432578401861521965, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_Name
+      value: FallingCeiling (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.6627
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 28.45042
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.4715667
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: delay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: initialDownSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 7.727273
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612167098965509577, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_DrawMode
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+--- !u!114 &418237598 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+  m_PrefabInstance: {fileID: 418237597}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3701922deb6aa742ae0fc07badfc5f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FallingObject
+--- !u!1 &450091521
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 450091524}
+  - component: {fileID: 450091523}
+  - component: {fileID: 450091522}
+  m_Layer: 0
+  m_Name: FallingCeilingTrigger (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &450091522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450091521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c69cc5cd9c84f0f42af6bfca0f05a588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapTrigger
+  activated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 418237598}
+        m_TargetAssemblyTypeName: FallingObject, Assembly-CSharp
+        m_MethodName: Activate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  trapId: FallingCeiling
+--- !u!61 &450091523
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450091521}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.65, y: 2.5}
+  m_EdgeRadius: 0
+--- !u!4 &450091524
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 450091521}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 27.610565, y: 1.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &670234703
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +668,7 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 2
+  m_DrawMode: 0
   m_Size: {x: 1.7, y: 1.7}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -378,8 +684,8 @@ Transform:
   m_GameObject: {fileID: 670234703}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.05, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: -0.25520325, y: 0.78725344, z: 0}
+  m_LocalScale: {x: 2.6562502, y: 2.6562502, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -476,6 +782,113 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &871146596
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 871146599}
+  - component: {fileID: 871146598}
+  - component: {fileID: 871146597}
+  m_Layer: 0
+  m_Name: FallingCeilingTrigger (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &871146597
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 871146596}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c69cc5cd9c84f0f42af6bfca0f05a588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapTrigger
+  activated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1711478081}
+        m_TargetAssemblyTypeName: FallingObject, Assembly-CSharp
+        m_MethodName: Activate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  trapId: FallingCeiling
+--- !u!61 &871146598
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 871146596}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.65, y: 2.5}
+  m_EdgeRadius: 0
+--- !u!4 &871146599
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 871146596}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 31.460012, y: 1.2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1078796937
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -489,12 +902,16 @@ PrefabInstance:
       value: FallingCeiling
       objectReference: {fileID: 0}
     - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.6188
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 22
+      value: 21.602495
       objectReference: {fileID: 0}
     - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.2
+      value: 6.4715667
       objectReference: {fileID: 0}
     - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
       propertyPath: m_LocalPosition.z
@@ -526,6 +943,26 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: delay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: initialDownSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 7.727273
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612167098965509577, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_DrawMode
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -746,6 +1183,106 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1295712662
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4432578401861521965, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_Name
+      value: FallingCeiling (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 25.414078
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.4715667
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7102614516666351360, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_Size.x
+      value: 1.0651261
+      objectReference: {fileID: 0}
+    - target: {fileID: 7102614516666351360, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_Offset.x
+      value: -0.317437
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: delay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: initialDownSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 4.9500914
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.3055
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612167098965509577, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_DrawMode
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+--- !u!114 &1295712663 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+  m_PrefabInstance: {fileID: 1295712662}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3701922deb6aa742ae0fc07badfc5f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FallingObject
 --- !u!1 &1301517974
 GameObject:
   m_ObjectHideFlags: 0
@@ -821,7 +1358,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0.14999998, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 3.125, y: 3.125, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 311211122}
@@ -879,7 +1416,7 @@ SpriteRenderer:
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
-  m_DrawMode: 2
+  m_DrawMode: 0
   m_Size: {x: 2, y: 2}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
@@ -1094,6 +1631,297 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -2.4, y: 2, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1001 &1574985715
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4432578401861521965, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_Name
+      value: FallingCeiling (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5834
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 42.3773
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.418173
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: delay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: initialDownSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 7.727273
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612167098965509577, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_DrawMode
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+--- !u!114 &1574985716 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+  m_PrefabInstance: {fileID: 1574985715}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3701922deb6aa742ae0fc07badfc5f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FallingObject
+--- !u!1001 &1711478080
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4432578401861521965, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_Name
+      value: FallingCeiling (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.5983
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 32.2451
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.4715667
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7094205169206189985, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: delay
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: initialDownSpeed
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 7.727273
+      objectReference: {fileID: 0}
+    - target: {fileID: 8086795355499144077, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8612167098965509577, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+      propertyPath: m_DrawMode
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+--- !u!114 &1711478081 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7769884617313192097, guid: 17396bd67f46aa14e8b8789f60e56a22, type: 3}
+  m_PrefabInstance: {fileID: 1711478080}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b3701922deb6aa742ae0fc07badfc5f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FallingObject
+--- !u!1 &1823238701
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1823238704}
+  - component: {fileID: 1823238703}
+  - component: {fileID: 1823238702}
+  m_Layer: 0
+  m_Name: FallingCeilingTrigger (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1823238702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1823238701}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c69cc5cd9c84f0f42af6bfca0f05a588, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TrapTrigger
+  activated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1574985716}
+        m_TargetAssemblyTypeName: FallingObject, Assembly-CSharp
+        m_MethodName: Activate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  trapId: FallingCeiling
+--- !u!61 &1823238703
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1823238701}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.65, y: 2.5}
+  m_EdgeRadius: 0
+--- !u!4 &1823238704
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1823238701}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 41.604862, y: 1.1466061, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1473,4 +2301,12 @@ SceneRoots:
   - {fileID: 1446294787}
   - {fileID: 330452454}
   - {fileID: 1078796937}
+  - {fileID: 1295712662}
+  - {fileID: 267476863}
+  - {fileID: 418237597}
+  - {fileID: 450091524}
+  - {fileID: 1711478080}
+  - {fileID: 1574985715}
+  - {fileID: 1823238704}
+  - {fileID: 871146599}
   - {fileID: 2108549503}
