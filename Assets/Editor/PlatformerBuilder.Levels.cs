@@ -159,7 +159,8 @@ public static partial class PlatformerBuilder
             Floor("FloorAfterTrap", (beginning + length + 2f) / 2, length + 2f - beginning);
             OpeningFloor(trapX);
         }
-        else Floor("Ground", length / 2, length + 4f);
+        else if (!advanced) Floor("Ground", length / 2, length + 4f);
+        if (advanced) BuildAdvancedContent(number, length);
         EditorSceneManager.SaveScene(scene, "Assets/Levels/Level " + number + ".unity");
     }
 
