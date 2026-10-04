@@ -48,6 +48,7 @@ public static partial class PlatformerValidation
             {
                 var popups = UnityEngine.Object.FindObjectsByType<PopupSpikeTrap>(FindObjectsSortMode.None);
                 Assert(popups.Length == 7 && UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).Length == 8, "Level 3 has exactly 15 traps plus the hole");
+                Assert(UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).All(b => b.disappearOnLanding && Mathf.Approximately(b.disappearDelay, .15f)), "All eight Level 3 bricks disappear shortly after landing");
                 Assert(popups.Count(p => p.randomTiming) == 3, "Level 3 changes from four patterned to three irregular popup groups");
             }
             if (level == 4)
@@ -75,6 +76,8 @@ public static partial class PlatformerValidation
                 Assert(Physics2D.OverlapPoint(new Vector2(62f, -.5f), 1 << 6) == null, "The final visible hole has no hidden floor");
                 Assert(UnityEngine.Object.FindObjectsByType<Hazard>(FindObjectsSortMode.None).Count(h => h.cause == "spikes") == 6, "Six visible spike groups protect the chase route");
             }
+            if (level == 6)
+                Assert(UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).All(b => !b.disappearOnLanding), "Level 6 retains its existing falling trap behaviour");
         }
         EditorSceneManager.OpenScene("Assets/Levels/Level 1.unity");
     }
@@ -149,10 +152,13 @@ public static partial class PlatformerValidation
         Assert(endFloor.Activated && !endFloor.GetComponent<BoxCollider2D>().enabled, "Level 2's final hole opens before the flag");
         Load("Level 3");
         yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 3");
+        var firstBrick = GameObject.Find("FallingBrick_1");
         Teleport(new Vector2(4.4f, .7f));
         Freeze(manager, true);
         yield return .2f;
-        Assert(GameObject.Find("FallingBrick_1").GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic, "Patterned brick trigger releases its brick");
+        Assert(firstBrick.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic, "Patterned brick trigger releases its brick");
+        Assert(firstBrick.transform.position.y > 1f && firstBrick.GetComponent<Collider2D>().enabled && firstBrick.GetComponentInChildren<SpriteRenderer>().enabled,
+            "The brick retains its artwork and collider while falling");
         var patterned = GameObject.Find("PopupSpikes_1").GetComponent<PopupSpikeTrap>();
         yield return new Await(() => patterned.Exposed);
         Assert(patterned.GetComponent<Collider2D>().enabled && patterned.artwork.GetComponent<SpriteRenderer>().enabled, "Popup spike artwork and lethal collider rise together");
@@ -162,6 +168,24 @@ public static partial class PlatformerValidation
         Teleport(new Vector2(irregular.transform.position.x - 4.5f, 3f));
         yield return new Await(() => irregular.Exposed);
         Assert(irregular.randomTiming && irregular.Activated, "Irregular end-section spikes cycle in play");
+        yield return new Await(() => firstBrick == null);
+        Assert(Physics2D.OverlapPoint(new Vector2(7f, .3f)) == null, "The landed brick disappears without leaving a solid or lethal collider");
+        var remainingBricks = UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        foreach (var brick in remainingBricks) brick.Activate();
+        yield return new Await(() => remainingBricks.All(b => b == null));
+        Assert(UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).Length == 0, "Every Level 3 brick is removed after its fall");
+        Load("Level 3");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 3");
+        var restoredBricks = UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        Assert(restoredBricks.Length == 8 && restoredBricks.All(b => !b.Activated && b.GetComponent<Collider2D>().enabled), "Reloading restores all eight falling bricks");
+        int ceilingDeaths = manager.Deaths;
+        GameObject.Find("FallingBrick_1").GetComponent<FallingObject>().Activate();
+        Teleport(new Vector2(7f, .44f));
+        Freeze(manager, true);
+        yield return new Await(() => manager.State == RunState.Transitioning);
+        yield return new Await(() => manager.State == RunState.Playing);
+        Assert(manager.Deaths == ceilingDeaths + 1 && File.ReadAllText(manager.GetComponent<RunLogger>().LogPath).Contains("\"ceiling\""),
+            "A falling brick still kills the player before ground cleanup");
         Load("Level 4");
         yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 4");
         var lures = UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).OrderBy(f => f.transform.position.x).ToArray();

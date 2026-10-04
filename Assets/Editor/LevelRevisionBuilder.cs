@@ -252,6 +252,9 @@ public static class LevelRevisionBuilder
             image.transform.localScale = new Vector3(1.05f / image.sprite.bounds.size.x, .55f / image.sprite.bounds.size.y, 1f);
             var falling = brick.GetComponent<FallingObject>();
             falling.delay = i < 5 ? .1f : new[] { .02f, .28f, .05f }[i - 5];
+            falling.disappearOnLanding = true;
+            falling.disappearDelay = .15f;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(falling);
             var trigger = Box("BrickTrigger_" + (i + 1), new Vector2(brickX[i] - (i < 5 ? 2.6f : new[] { 3.1f, 2f, 2.8f }[i - 5]), 1.25f), new Vector2(.55f, 3.6f), true).AddComponent<TrapTrigger>();
             trigger.trapId = brick.name;
             UnityEventTools.AddPersistentListener(trigger.activated, falling.Activate);
@@ -262,6 +265,22 @@ public static class LevelRevisionBuilder
             popup.initialDelay = i < 4 ? (i % 2) * .2f : .03f * (i - 4);
         }
         Finish(45f);
+    }
+
+    // Update only behaviour overrides; preserve the authored block positions, triggers, art and floor layout.
+    public static void RemoveLevelThreeBlocksAfterLanding()
+    {
+        EditorSceneManager.OpenScene("Assets/Levels/Level 3.unity");
+        var blocks = UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        if (blocks.Length != 8) throw new InvalidOperationException("Expected Level 3's eight falling blocks.");
+        foreach (var block in blocks)
+        {
+            block.disappearOnLanding = true;
+            block.disappearDelay = .15f;
+            PrefabUtility.RecordPrefabInstancePropertyModifications(block);
+        }
+        EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
+        Debug.Log("LEVEL_THREE_BLOCK_CLEANUP_OK");
     }
 
     static void ReviseFour()

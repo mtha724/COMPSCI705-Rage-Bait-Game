@@ -23,7 +23,7 @@ Travel targets exclude jumps, trap learning, deaths and repeated earlier levels.
 - LevelSetup in each scene: internal level number, spawn reference, travel distance and walking-time target.
 - CameraFollow: horizontal bounds, vertical position and smoothing.
 - OpeningFloor / FakePlatform: disappearance delay; fake platforms activate on a top landing.
-- FallingCeiling: falling delay and initial downward velocity. Each approach trigger activates once.
+- FallingCeiling: falling delay and initial downward velocity. Each approach trigger activates once. Level 3's eight bricks enable Disappear On Landing and disappear 0.15 seconds after touching the ground, removing their artwork and collider together. Other falling traps leave this option disabled.
 - PopupSpikes: exposure/hidden durations, rise time, activation distance and random seed. The first four groups use regular cycles; the last three use seeded irregular intervals.
 - EscapingFlagTrap: linked floor, shared RunningFlag and zero-based stage index. The four triggers open their own floors and advance the same flag in order.
 - RunningFlag on Level 4's GoalFlag: four Next Stops and escape speed. The flag moves from x=8 to 17, 26, 47 and finally 55; its goal collider activates only after the final movement finishes. Scene reload resets the whole sequence.
