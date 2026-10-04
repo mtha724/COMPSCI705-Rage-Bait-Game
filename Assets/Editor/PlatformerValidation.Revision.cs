@@ -21,7 +21,8 @@ public static partial class PlatformerValidation
             var setup = UnityEngine.Object.FindFirstObjectByType<LevelSetup>();
             var player = UnityEngine.Object.FindFirstObjectByType<PlayerMove>();
             var goal = UnityEngine.Object.FindFirstObjectByType<Goal>();
-            Assert(setup.travelDistance > previous, "Travel increases in level " + level);
+            Assert(level == 6 ? setup.travelDistance > 45f && setup.travelDistance <= 55f : setup.travelDistance > previous,
+                level == 6 ? "Level 6 travel is slightly longer than Level 3" : "Travel increases in level " + level);
             Assert(Mathf.Approximately(setup.walkingTargetSeconds, setup.travelDistance / player.speed), "Walking target matches player speed in level " + level);
             Assert(goal.nextScene == (level == 6 ? "" : "Level " + (level + 1)), "Genuine flag progression in level " + level);
             previous = setup.travelDistance;
@@ -76,8 +77,7 @@ public static partial class PlatformerValidation
                 Assert(Physics2D.OverlapPoint(new Vector2(62f, -.5f), 1 << 6) == null, "The final visible hole has no hidden floor");
                 Assert(UnityEngine.Object.FindObjectsByType<Hazard>(FindObjectsSortMode.None).Count(h => h.cause == "spikes") == 6, "Six visible spike groups protect the chase route");
             }
-            if (level == 6)
-                Assert(UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).All(b => !b.disappearOnLanding), "Level 6 retains its existing falling trap behaviour");
+            if (level == 6) ValidateLevelSixDesign();
         }
         EditorSceneManager.OpenScene("Assets/Levels/Level 1.unity");
     }
@@ -153,8 +153,10 @@ public static partial class PlatformerValidation
         Load("Level 3");
         yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 3");
         var firstBrick = GameObject.Find("FallingBrick_1");
-        Teleport(new Vector2(4.4f, .7f));
+        Teleport(new Vector2(GameObject.Find("BrickTrigger_1").transform.position.x, .7f));
         Freeze(manager, true);
+        yield return .04f;
+        Teleport(new Vector2(firstBrick.transform.position.x - 2f, .7f));
         yield return .2f;
         Assert(firstBrick.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic, "Patterned brick trigger releases its brick");
         Assert(firstBrick.transform.position.y > 1f && firstBrick.GetComponent<Collider2D>().enabled && firstBrick.GetComponentInChildren<SpriteRenderer>().enabled,
@@ -169,8 +171,9 @@ public static partial class PlatformerValidation
         yield return new Await(() => irregular.Exposed);
         Assert(irregular.randomTiming && irregular.Activated, "Irregular end-section spikes cycle in play");
         yield return new Await(() => firstBrick == null);
-        Assert(Physics2D.OverlapPoint(new Vector2(7f, .3f)) == null, "The landed brick disappears without leaving a solid or lethal collider");
+        Assert(GameObject.Find("FallingBrick_1") == null, "The landed brick disappears without leaving a solid or lethal collider");
         var remainingBricks = UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        Teleport(new Vector2(GameObject.Find("BrickTrigger_1").transform.position.x - 2f, .7f));
         foreach (var brick in remainingBricks) brick.Activate();
         yield return new Await(() => remainingBricks.All(b => b == null));
         Assert(UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).Length == 0, "Every Level 3 brick is removed after its fall");
@@ -179,8 +182,9 @@ public static partial class PlatformerValidation
         var restoredBricks = UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
         Assert(restoredBricks.Length == 8 && restoredBricks.All(b => !b.Activated && b.GetComponent<Collider2D>().enabled), "Reloading restores all eight falling bricks");
         int ceilingDeaths = manager.Deaths;
-        GameObject.Find("FallingBrick_1").GetComponent<FallingObject>().Activate();
-        Teleport(new Vector2(7f, .44f));
+        var lethalBrick = GameObject.Find("FallingBrick_1").GetComponent<FallingObject>();
+        lethalBrick.Activate();
+        Teleport(new Vector2(lethalBrick.transform.position.x, .44f));
         Freeze(manager, true);
         yield return new Await(() => manager.State == RunState.Transitioning);
         yield return new Await(() => manager.State == RunState.Playing);
@@ -286,11 +290,8 @@ public static partial class PlatformerValidation
         Assert(true, "Genuine goal still advances normally");
         Load("Level 6");
         yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 6");
-        Teleport(new Vector2(51f, .7f));
-        yield return .08f;
-        Assert(manager.Player.ControlsReversed, "Level 6's existing reversal remains compatible");
-        Teleport(new Vector2(75f, .8f));
-        yield return new Await(() => manager.State == RunState.Completed);
+        var finalChecks = LevelSixPlayChecks(manager, mouse);
+        while (finalChecks.MoveNext()) yield return finalChecks.Current;
         Assert(File.ReadAllText(manager.GetComponent<RunLogger>().LogPath).Contains("completed"), "Final completion is recorded");
         for (int choice = 1; choice <= 2; choice++)
         {

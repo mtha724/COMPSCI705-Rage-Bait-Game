@@ -32,10 +32,16 @@ public static partial class PlatformerValidation
     public static void ValidateDesign() => ValidateRevisedDesign();
 
     [MenuItem("Tools/Rage Game/Run Gameplay Checks")]
-    public static void Run()
+    public static void Run() => BeginValidation(false);
+
+    [MenuItem("Tools/Rage Game/Run Level 6 Checks")]
+    public static void RunLevelSix() => BeginValidation(true);
+
+    static void BeginValidation(bool sixOnly)
     {
         try
         {
+            SessionState.SetBool(ActiveKey + ".SixOnly", sixOnly);
             ValidateDesign();
             SessionState.SetBool(ActiveKey, true);
             SessionState.SetBool(ActiveKey + ".Preparing", true);
@@ -114,7 +120,7 @@ public static partial class PlatformerValidation
         catch (Exception error) { Fail(error); }
     }
 
-    static IEnumerator PlayChecks() => RevisedPlayChecks();
+    static IEnumerator PlayChecks() => SessionState.GetBool(ActiveKey + ".SixOnly", false) ? SixOnlyPlayChecks() : RevisedPlayChecks();
 
     static void Load(string scene)
     {

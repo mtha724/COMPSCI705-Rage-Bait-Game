@@ -13,7 +13,7 @@ The build includes six scenes in order. The default death destination is Level 1
 | Level 3 | 45 | 9 s | Eight falling bricks, seven popup spike groups, then an opening hole |
 | Level 4 | 55 | 11 s | One flag escapes three opening floors, crosses the copied parkour, then escapes a fourth floor to become the finish |
 | Level 5 | 65 | 13 s | Reversed controls, chasing saw, visible spikes, copied parkour, visible hole, then normal controls |
-| Level 6 | 75 | 15 s | Fake platforms, falling ceiling, reversed controls |
+| Level 6 | About 50 along the folded route | About 10 s | Advancing saw column, climb, spike/fake-platform roof, right drop, reversed middle return, skill fall, final chase and escaping flag over an opening hole |
 
 Travel targets exclude jumps, trap learning, deaths and repeated earlier levels. These values are pilot starting points, not literature-derived requirements. Player speed is 5, jump velocity 9, gravity scale 3, and fall gravity multiplier 1.4. Adjust the Player prefab before balancing gaps. Reversal changes horizontal direction and facing, while Jump remains unchanged. The second zone in Level 5 restores normal input only after the final visible hole. Irregular popup timings use per-trap seeds so the same layout and timing rules apply to all FX conditions.
 
@@ -21,14 +21,17 @@ Travel targets exclude jumps, trap learning, deaths and repeated earlier levels.
 
 - Player prefab: movement, jump, ground layer, falling gravity, and zero-friction collider material.
 - LevelSetup in each scene: internal level number, spawn reference, travel distance and walking-time target.
-- CameraFollow: horizontal bounds, vertical position and smoothing.
+- CameraFollow: horizontal bounds, vertical position and smoothing. Follow Vertical is enabled in Level 6, where Look Ahead is 0 so the camera works in both travel directions.
 - OpeningFloor / FakePlatform: disappearance delay; fake platforms activate on a top landing.
-- FallingCeiling: falling delay and initial downward velocity. Each approach trigger activates once. Level 3's eight bricks enable Disappear On Landing and disappear 0.15 seconds after touching the ground, removing their artwork and collider together. Other falling traps leave this option disabled.
+- FallingCeiling: falling delay and initial downward velocity. Each approach trigger activates once. Level 3's eight bricks and Level 6's two bricks enable Disappear On Landing and disappear 0.15 seconds after touching the ground, removing their artwork and collider together.
 - PopupSpikes: exposure/hidden durations, rise time, activation distance and random seed. The first four groups use regular cycles; the last three use seeded irregular intervals.
 - EscapingFlagTrap: linked floor, shared RunningFlag and zero-based stage index. The four triggers open their own floors and advance the same flag in order.
 - RunningFlag on Level 4's GoalFlag: four Next Stops and escape speed. The flag moves from x=8 to 17, 26, 47 and finally 55; its goal collider activates only after the final movement finishes. Scene reload resets the whole sequence.
 - ChasingSaw: speed, vertical tracking limits and artwork. Its speed starts below the player run speed.
-- ReverseZone: Restore Normal Controls is enabled only on the narrow trigger after Level 5's final hole.
+- Level 6 PressureSaw_1–3: speed 0.32, fixed heights 1.6/4.8/8, and End X 6.5. All three move slowly right when the spawn trigger activates; a player who waits too long on the climb is caught. FinalChasingSaw moves right at 3.6 units/s after the skill fall.
+- RevealHazard: initially hidden, harmless spikes that become visible and lethal on a trigger. The skill-fall spike stays exposed after appearing; steer right once below the return ledge.
+- ShortcutTrap: barrier, collapsing ledge and spike reveal. Jumping toward the apparent opening reveals the wall and removes the ledge underneath the player.
+- ReverseZone: Restore Normal Controls is enabled on the trigger after Level 5's final hole and at the end of Level 6's middle return.
 - HoleHazard: image-free trigger collider with death cause hole. Disabling it prevents the hole from killing the player.
 - GoalFlag: next scene; blank next scene means completed.
 - GameManager prefab: equal restart/transition delays, starting FX condition, optional timer, and optional active-time session limit (0 disables the limit).
@@ -37,7 +40,9 @@ Travel targets exclude jumps, trap learning, deaths and repeated earlier levels.
 
 The included audio cues are original generated placeholders. They are not Roblox recordings. The overboard death uses red particles as a stylised splatter effect. Existing Pixel Adventure art and the existing character animation controller are reused.
 
-The Tools > Rage Game menus generate the player/common prefabs and level layouts. Build Six Levels regenerates the authored Level 1–6 scenes. Normal level editing is through the saved scenes and prefabs. The original phase builders recreate the earlier baseline layouts; they do not preserve these later manual revisions. LevelRevisionBuilder.Apply is a separate authoring operation for this revision and rewrites Levels 1–5. Level 6 is intentionally unchanged and scheduled for a future rework. New hazard/platform artwork uses Simple sprite renderers and repeated images. Run Validate Design for asset/scene checks, or Run Gameplay Checks for input, collision, trap, restart, progression and logging checks.
+The Tools > Rage Game menus generate the player/common prefabs and level layouts. Build Six Levels regenerates the authored Level 1–6 scenes. Normal level editing is through the saved scenes and prefabs. The original phase builders recreate the earlier baseline layouts; they do not preserve these later manual revisions. LevelRevisionBuilder.Apply is a separate authoring operation for this revision and rewrites Levels 1–5. Rebuild Folded Level 6 replaces only Level 6 with the sketch-based route. New hazard/platform/background artwork uses Simple sprite renderers and repeated images. Run Validate Design for asset/scene checks, Run Gameplay Checks for the whole game, or Run Level 6 Checks for the negative trap cases and a complete route traversal with real keyboard input.
+
+Level 6 follows: climb left → cross the roof → descend the right shaft → travel left along the middle ledge → fall and steer right beneath that ledge → jump the bottom spikes and opening floor to the escaping flag. Its compact footprint is roughly 34 units wide, with about 50 units of horizontal route travel, slightly above Level 3's 45. Vertical jumps, controlled falls and trap timing add to its actual completion time. It deliberately does not keep the earlier 75-unit straight-line layout.
 
 ## Data
 

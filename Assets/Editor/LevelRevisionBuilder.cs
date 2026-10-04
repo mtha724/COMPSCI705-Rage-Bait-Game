@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 // Targeted authoring operations on the team's existing scenes, rather than rebuilding all six levels.
-public static class LevelRevisionBuilder
+public static partial class LevelRevisionBuilder
 {
     const string Art = "Assets/Sprites/character/Assets/";
     const string Prefabs = "Assets/Prefabs/";
