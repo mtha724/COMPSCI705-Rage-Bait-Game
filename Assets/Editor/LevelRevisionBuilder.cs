@@ -78,9 +78,9 @@ public static partial class LevelRevisionBuilder
         return obj;
     }
 
-    static GameObject Hole(float beginning, float end, float top = 0f, string name = "HoleHazard")
+    static GameObject Hole(float beginning, float end, float top = 0f, string name = "HoleHazard", float depth = 8f)
     {
-        var obj = Box(name, new Vector2((beginning + end) / 2, top - .9f), new Vector2(end - beginning, .4f), true);
+        var obj = Box(name, new Vector2((beginning + end) / 2, top - depth), new Vector2(end - beginning, .4f), true);
         obj.AddComponent<Hazard>().cause = "hole";
         return obj;
     }
@@ -177,10 +177,11 @@ public static partial class LevelRevisionBuilder
         {
             // Level 1's temporary test collider had zero width; fit the hidden kill volume to the actual opening.
             var bounds = opening.Value;
-            spikes.transform.position = new Vector3(bounds.center.x, bounds.max.y - .9f, 0);
+            spikes.transform.position = new Vector3(bounds.center.x, bounds.max.y - 8f, 0);
             box.offset = Vector2.zero;
             box.size = new Vector2(bounds.size.x, .4f);
         }
+        else spikes.transform.position = new Vector3(spikes.transform.position.x, -8f, spikes.transform.position.z);
     }
 
     static void Finish(float goalX)
@@ -192,7 +193,7 @@ public static partial class LevelRevisionBuilder
         follow.leftBoundary = -2f;
         follow.rightBoundary = goalX + 2f;
         var kill = GameObject.Find("KillZone");
-        kill.transform.position = new Vector3(goalX / 2, -5f, 0);
+        kill.transform.position = new Vector3(goalX / 2, -10f, 0);
         kill.GetComponent<BoxCollider2D>().size = new Vector2(goalX + 12f, 1f);
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
     }

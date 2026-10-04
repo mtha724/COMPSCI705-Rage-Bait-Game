@@ -52,7 +52,7 @@ public static partial class LevelRevisionBuilder
         var fakeRoof = SixSurface("FakeRoofPlatform", 13.6f, 14.9f, 9f).AddComponent<DisappearingPlatform>();
         fakeRoof.activateOnLanding = true;
         fakeRoof.delay = .22f;
-        var fakeHole = Hole(13.6f, 14.9f, 9f, "FakeRoofHole");
+        var fakeHole = Hole(13.6f, 14.9f, 9f, "FakeRoofHole", 5f);
         fakeHole.transform.SetParent(sixTraps, true);
 
         // Three stacked saws sweep slowly right together. They do not oscillate or teleport to the player.
@@ -64,7 +64,7 @@ public static partial class LevelRevisionBuilder
             saw.speed = .32f;
             saw.verticalSpeed = 0f;
             saw.minimumHeight = saw.maximumHeight = sawHeights[i];
-            saw.endX = 6.5f;
+            saw.endX = 34f;
             UnityEventTools.AddPersistentListener(pressureTrigger.activated, saw.Activate);
             PrefabUtility.RecordPrefabInstancePropertyModifications(saw);
         }
@@ -106,6 +106,8 @@ public static partial class LevelRevisionBuilder
         AddRouteArrow(new Vector2(11.1f, 4.65f), -90f);
         AddRouteArrow(new Vector2(12.9f, .95f), 0f);
         ConfigureSixFraming(setup);
+        ConfigurePressureSawSpeedUp();
+        ConfigureRoofPitCamera();
         EditorSceneManager.SaveScene(SceneManager.GetActiveScene());
         Debug.Log("FOLDED_LEVEL_SIX_OK");
     }
@@ -283,7 +285,7 @@ public static partial class LevelRevisionBuilder
         follow.maximumHeight = 10.2f;
         Camera.main.orthographicSize = 4.25f;
         var kill = Root("KillZone");
-        kill.transform.position = new Vector3(15f, -5f, 0f);
+        kill.transform.position = new Vector3(15f, -10f, 0f);
         kill.GetComponent<BoxCollider2D>().size = new Vector2(44f, 1f);
         foreach (string boundary in new[] { "LeftBoundary", "RightBoundary" })
         {

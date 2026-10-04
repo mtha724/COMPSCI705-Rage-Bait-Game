@@ -3757,6 +3757,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7949578973904310500, guid: fbd9d221bf7c9b84e873f1935be5b409, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.07135
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -4534,6 +4538,11 @@ MonoBehaviour:
   rightBoundary: 57
   height: 2.2
   smoothTime: 0.12
+  lookAhead: 2
+  followVertical: 0
+  minimumHeight: 2.2
+  maximumHeight: 10.2
+  verticalOffset: 1.4
 --- !u!81 &1194320959
 AudioListener:
   m_ObjectHideFlags: 0
@@ -9167,7 +9176,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3231432441705117338, guid: 35735f4eb1675444b9ed39d8bd50d3b9, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -5
+      value: -10
       objectReference: {fileID: 0}
     - target: {fileID: 3231432441705117338, guid: 35735f4eb1675444b9ed39d8bd50d3b9, type: 3}
       propertyPath: m_LocalPosition.z

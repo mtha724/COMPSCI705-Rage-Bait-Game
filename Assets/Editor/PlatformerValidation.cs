@@ -37,12 +37,14 @@ public static partial class PlatformerValidation
     [MenuItem("Tools/Rage Game/Run Level 6 Checks")]
     public static void RunLevelSix() => BeginValidation(true);
 
-    static void BeginValidation(bool sixOnly)
+    static void BeginValidation(bool sixOnly, bool pitsOnly = false)
     {
         try
         {
             SessionState.SetBool(ActiveKey + ".SixOnly", sixOnly);
-            ValidateDesign();
+            SessionState.SetBool(ActiveKey + ".PitsOnly", pitsOnly);
+            if (pitsOnly) ValidatePitsAndSawsDesign();
+            else ValidateDesign();
             SessionState.SetBool(ActiveKey, true);
             SessionState.SetBool(ActiveKey + ".Preparing", true);
             EditorApplication.isPaused = false;
@@ -120,7 +122,9 @@ public static partial class PlatformerValidation
         catch (Exception error) { Fail(error); }
     }
 
-    static IEnumerator PlayChecks() => SessionState.GetBool(ActiveKey + ".SixOnly", false) ? SixOnlyPlayChecks() : RevisedPlayChecks();
+    static IEnumerator PlayChecks() => SessionState.GetBool(ActiveKey + ".PitsOnly", false)
+        ? PitsAndSawsPlayChecks()
+        : SessionState.GetBool(ActiveKey + ".SixOnly", false) ? SixOnlyPlayChecks() : RevisedPlayChecks();
 
     static void Load(string scene)
     {
@@ -153,7 +157,7 @@ public static partial class PlatformerValidation
         Application.logMessageReceived -= RuntimeLog;
         Directory.CreateDirectory("Logs");
         File.WriteAllText("Logs/validation.json", "{\"passed\":false,\"error\":\"" + error.Message.Replace("\"", "'").Replace("\n", " ") + "\"}");
-        Debug.LogError("PLATFORMER_VALIDATION_FAILED: " + error.Message);
+        Debug.LogError("PLATFORMER_VALIDATION_FAILED: " + error);
         if (Application.isBatchMode) EditorApplication.Exit(1);
         else EditorApplication.ExitPlaymode();
     }

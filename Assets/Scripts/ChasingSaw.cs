@@ -32,12 +32,20 @@ public class ChasingSaw : MonoBehaviour
         foreach (var image in images) image.enabled = true;
     }
 
+    // TrapTrigger invokes this once per attempt with an Inspector-supplied multiplier.
+    // Scale the authored speed, so separately tuned pressure saws keep their relative speeds.
+    public void MultiplySpeed(float multiplier)
+    {
+        if (multiplier <= 0f || float.IsNaN(multiplier) || float.IsInfinity(multiplier)) return;
+        speed *= multiplier;
+    }
+
     private void FixedUpdate()
     {
         var manager = GameManager.Instance;
         if (!Activated || manager == null || manager.State != RunState.Playing || manager.Paused || manager.Player == null) return;
         float targetY = Mathf.Clamp(manager.Player.transform.position.y, minimumHeight, maximumHeight);
-        // Never warp to the player or move left; speed below the player's run speed allows an escape.
+        // Advance continuously without warping to the player; triggers can increase the authored speed.
         body.MovePosition(new Vector2(Mathf.Min(endX, body.position.x + speed * Time.fixedDeltaTime),
             Mathf.MoveTowards(body.position.y, targetY, verticalSpeed * Time.fixedDeltaTime)));
         artwork.Rotate(0f, 0f, -540f * Time.fixedDeltaTime);

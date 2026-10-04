@@ -28,11 +28,13 @@ Travel targets exclude jumps, trap learning, deaths and repeated earlier levels.
 - EscapingFlagTrap: linked floor, shared RunningFlag and zero-based stage index. The four triggers open their own floors and advance the same flag in order.
 - RunningFlag on Level 4's GoalFlag: four Next Stops and escape speed. The flag moves from x=8 to 17, 26, 47 and finally 55; its goal collider activates only after the final movement finishes. Scene reload resets the whole sequence.
 - ChasingSaw: speed, vertical tracking limits and artwork. Its speed starts below the player run speed.
-- Level 6 PressureSaw_1–3: speed 0.32, fixed heights 1.6/4.8/8, and End X 6.5. All three move slowly right when the spawn trigger activates; a player who waits too long on the climb is caught. FinalChasingSaw moves right at 3.6 units/s after the skill fall.
+- Level 6 PressureSaw_1–3: each uses its own Inspector speed and fixed height; the folded-level builder defaults to speed 0.32. Their End X reaches the right camera boundary so they continue across the level, including after the later speed-up trigger. PressureSawSpeedUpTrigger multiplies all three current speeds by 2.5 once per attempt. Re-entering has no further effect, and scene reload restores the authored speeds. The separate FinalChasingSaw retains its own speed.
 - RevealHazard: initially hidden, harmless spikes that become visible and lethal on a trigger. The skill-fall spike stays exposed after appearing; steer right once below the return ledge.
 - ShortcutTrap: barrier, collapsing ledge and spike reveal. Jumping toward the apparent opening reveals the wall and removes the ledge underneath the player.
 - ReverseZone: Restore Normal Controls is enabled on the trigger after Level 5's final hole and at the end of Level 6's middle return.
-- HoleHazard: image-free trigger collider with death cause hole. Disabling it prevents the hole from killing the player.
+- HoleHazard: image-free trigger collider with death cause hole. Ground-level pit colliders are centred at y=-8, with the fallback KillZone at y=-10, so the whole character falls out of view before death. Ground and wall colliders use PlayerNoFriction, including both vertical edges of each pit. The elevated roof pit kills five units below its lip, before the middle ledge catches the fall. RoofPitCameraTrigger holds vertical framing during a downward fall; a safe landing or scene reload restores tracking.
+
+Apply Pitfall and Saw Adjustments updates these settings in all six saved scenes and the reusable pit/platform prefabs while preserving the authored layout. Run Pitfall and Saw Checks verifies off-screen deaths, friction-free pit-wall contact, the 2.5x speed change, trigger re-entry, pause and reload.
 - GoalFlag: next scene; blank next scene means completed.
 - GameManager prefab: equal restart/transition delays, starting FX condition, optional timer, and optional active-time session limit (0 disables the limit).
 - Effects profile assets: particles, lifetime, layers, gain, overlay opacity and death text size.

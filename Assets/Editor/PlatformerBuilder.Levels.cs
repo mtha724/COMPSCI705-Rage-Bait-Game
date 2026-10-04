@@ -42,7 +42,7 @@ public static partial class PlatformerBuilder
         var manager = new GameObject("GameManager");
         manager.AddComponent<GameManager>();
         PrefabUtility.SaveAsPrefabAsset(manager, Prefabs + "/GameManager.prefab");
-        var kill = Box("KillZone", new Vector2(0, -5), new Vector2(10, 1), true);
+        var kill = Box("KillZone", new Vector2(0, -10), new Vector2(10, 1), true);
         kill.AddComponent<Hazard>().cause = "fall";
         PrefabUtility.SaveAsPrefabAsset(kill, Prefabs + "/KillZone.prefab");
         var flag = MakeFlag(0, "");
@@ -155,7 +155,7 @@ public static partial class PlatformerBuilder
         var start = Visual("StartMarker", SpriteAt("Items/Checkpoints/Start/Start (Idle).png"), new Vector2(0, .05f), new Vector2(1.7f, 1.7f), 1);
         MakeFlag(length, number == 6 ? "" : "Level " + (number + 1));
         var kill = (GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>(Prefabs + "/KillZone.prefab"));
-        kill.transform.position = new Vector3(length / 2, -5, 0);
+        kill.transform.position = new Vector3(length / 2, -10, 0);
         kill.GetComponent<BoxCollider2D>().size = new Vector2(length + 12f, 1f);
         Box("LeftBoundary", new Vector2(-2.4f, 2), new Vector2(.8f, 8));
         Box("RightBoundary", new Vector2(length + 2.4f, 2), new Vector2(.8f, 8));
