@@ -9,4 +9,13 @@ These clips were selected by the project owner for the Overboard FX condition.
 | `MinecraftCave.wav` | Beginning of a new run | [Modern Meme Sound Effects](https://www.youtube.com/watch?v=O8XIv1UBg5U&t=19s), 00:19–00:22 |
 | `PokemonWall.wav` | Falling block's first ground impact | [Modern Meme Sound Effects](https://www.youtube.com/watch?v=O8XIv1UBg5U&t=22s), 00:22–00:23 |
 
-Clips are mono 44.1 kHz, 16-bit PCM WAV. Peak levels are matched at 85% of full scale, with 5 ms edge fades to avoid clicks at the cuts. Playback gain is configured by `cueGain` in the Overboard FX profile. The dedicated persistent cue source lets a sound finish across a scene reload without delaying gameplay.
+Clips are mono 44.1 kHz, 16-bit PCM WAV. Peak levels are matched at 85% of full scale before applying the fades below. Each clip has a raised-cosine fade in and fade out: the volume changes gradually with flat slopes at the ends, smoothing the start and finish. The fades are baked into the audio so overlapping sounds fade independently. Clip lengths and asset references are preserved.
+
+| Asset | Fade in | Fade out |
+| --- | --- | --- |
+| `Death.wav` | 0.18 s | 0.35 s |
+| `EyeOfRah.wav` | 0.18 s | 0.40 s |
+| `MinecraftCave.wav` | 0.25 s | 0.60 s |
+| `PokemonWall.wav` | 0.10 s | 0.18 s |
+
+Playback gain is configured by `cueGain` in the Overboard FX profile. The dedicated persistent cue source lets a sound finish across a scene reload without delaying gameplay.
