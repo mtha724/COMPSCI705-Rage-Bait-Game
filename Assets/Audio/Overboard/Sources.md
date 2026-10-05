@@ -7,7 +7,7 @@ These clips were selected by the project owner for the Overboard FX condition.
 | `Death.wav` | Player death | [Dandy's World Death Sound Effect](https://www.youtube.com/watch?v=Mxg0ec4uBtc), complete audio |
 | `EyeOfRah.wav` | Player revival after a death | [Modern Meme Sound Effects](https://www.youtube.com/watch?v=O8XIv1UBg5U&t=5s), 00:05–00:07 |
 | `MinecraftCave.wav` | Beginning of a new run | [Modern Meme Sound Effects](https://www.youtube.com/watch?v=O8XIv1UBg5U&t=19s), 00:19–00:22 |
-| `PokemonWall.wav` | Falling block's first ground impact | [Modern Meme Sound Effects](https://www.youtube.com/watch?v=O8XIv1UBg5U&t=22s), 00:22–00:23 |
+| `PokemonWall.wav` | Falling block's first ground impact | [Modern Meme Sound Effects](https://www.youtube.com/watch?v=O8XIv1UBg5U&t=23s), 00:23–00:24 |
 
 Clips are mono 44.1 kHz, 16-bit PCM WAV. Peak levels are matched at 85% of full scale before applying the fades below. Each clip has a raised-cosine fade in and fade out: the volume changes gradually with flat slopes at the ends, smoothing the start and finish. The fades are baked into the audio so overlapping sounds fade independently. Fades preserve each selected segment's duration and asset reference.
 
