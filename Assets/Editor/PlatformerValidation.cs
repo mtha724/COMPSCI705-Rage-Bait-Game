@@ -37,13 +37,23 @@ public static partial class PlatformerValidation
     [MenuItem("Tools/Rage Game/Run Level 6 Checks")]
     public static void RunLevelSix() => BeginValidation(true);
 
-    static void BeginValidation(bool sixOnly, bool pitsOnly = false)
+    [MenuItem("Tools/Rage Game/Run Overboard FX Checks")]
+    public static void RunOverboardFeedback() => BeginValidation(false, feedbackOnly: true);
+
+    static void BeginValidation(bool sixOnly, bool pitsOnly = false, bool feedbackOnly = false)
     {
         try
         {
             SessionState.SetBool(ActiveKey + ".SixOnly", sixOnly);
             SessionState.SetBool(ActiveKey + ".PitsOnly", pitsOnly);
-            if (pitsOnly) ValidatePitsAndSawsDesign();
+            SessionState.SetBool(ActiveKey + ".FeedbackOnly", feedbackOnly);
+            if (feedbackOnly)
+            {
+                // Feedback checks do not rebuild or depend on the team's changing level layouts.
+                if (SceneManager.GetActiveScene().isDirty) throw new Exception("Save the current scene before running feedback checks.");
+                EditorSceneManager.OpenScene("Assets/Levels/Level 1.unity");
+            }
+            else if (pitsOnly) ValidatePitsAndSawsDesign();
             else ValidateDesign();
             SessionState.SetBool(ActiveKey, true);
             SessionState.SetBool(ActiveKey + ".Preparing", true);
@@ -122,7 +132,9 @@ public static partial class PlatformerValidation
         catch (Exception error) { Fail(error); }
     }
 
-    static IEnumerator PlayChecks() => SessionState.GetBool(ActiveKey + ".PitsOnly", false)
+    static IEnumerator PlayChecks() => SessionState.GetBool(ActiveKey + ".FeedbackOnly", false)
+        ? OverboardFeedbackPlayChecks()
+        : SessionState.GetBool(ActiveKey + ".PitsOnly", false)
         ? PitsAndSawsPlayChecks()
         : SessionState.GetBool(ActiveKey + ".SixOnly", false) ? SixOnlyPlayChecks() : RevisedPlayChecks();
 

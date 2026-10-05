@@ -10,11 +10,16 @@ public class FXController : MonoBehaviour
     public string Message { get; private set; }
     public Color ScreenColour { get; private set; }
     public int MessageSize => Profile != null ? Profile.deathTextSize : 44;
+    public Color MessageColour => Profile != null ? Profile.deathTextColour : Color.white;
+    public bool MessageBold => Profile != null && Profile.boldDeathText;
+    public float MessageThickness => Profile != null ? Profile.deathTextThickness : 0f;
+    public bool MessageBackdrop => Profile != null && Profile.deathTextBackdrop;
     public FXProfile Profile => profiles != null && profiles.Length > (int)manager.condition ? profiles[(int)manager.condition] : null;
     private GameManager manager;
     private PlayerMove bound;
     private ParticleSystem particles;
     private AudioSource audioSource;
+    private AudioSource cueSource;
     private float messageUntil;
     private float fadeStart;
     private float fadeDuration;
@@ -26,6 +31,10 @@ public class FXController : MonoBehaviour
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
         audioSource.spatialBlend = 0f;
+        // Cues survive player rebinding so a death sound can finish while the revival sound starts.
+        cueSource = gameObject.AddComponent<AudioSource>();
+        cueSource.playOnAwake = false;
+        cueSource.spatialBlend = 0f;
         var obj = new GameObject("FeedbackParticles");
         obj.transform.SetParent(transform);
         particles = obj.AddComponent<ParticleSystem>();
@@ -54,6 +63,8 @@ public class FXController : MonoBehaviour
         manager.PlayerBound += Bind;
         manager.Died += Death;
         manager.GoalReached += Goal;
+        manager.RunStarted += RunStarted;
+        manager.Revived += Revived;
     }
 
     // Scene reloads replace the player: detach old events, clear previous effects and subscribe to the new one.
@@ -73,6 +84,7 @@ public class FXController : MonoBehaviour
         bound.Stepped += Step;
         Message = "";
         ScreenColour = Color.clear;
+        overlay = Color.clear;
     }
 
     private void Update()
@@ -112,11 +124,18 @@ public class FXController : MonoBehaviour
     private void Death(Vector3 p)
     {
         if (Profile == null) return;
-        Message = "You died";
+        Message = Profile.deathMessage;
+        if (Profile.tintPlayerOnDeath && bound != null)
+            foreach (var sprite in bound.GetComponentsInChildren<SpriteRenderer>())
+                sprite.color = Profile.playerDeathColour;
         // Use the manager's restart delay so every condition shows death feedback for the same duration.
         messageUntil = Time.unscaledTime + manager.restartDelay;
         Fade(new Color(.9f, .03f, .07f, Profile.screenOpacity), manager.restartDelay);
-        Feedback(p, Profile.deathParticles, deathClip, manager.condition == FXCondition.Overboard ? Color.red : new Color(1f, .65f, .2f), true);
+        // Use one copy of the chosen death cue; movement/goal feedback retains its existing layering.
+        bool customDeath = Profile.deathClipOverride != null;
+        Feedback(p, Profile.deathParticles, customDeath ? null : deathClip,
+            manager.condition == FXCondition.Overboard ? Color.red : new Color(1f, .65f, .2f), !customDeath);
+        if (customDeath) PlayCue(Profile.deathClipOverride);
     }
     private void Goal(Vector3 p)
     {
@@ -130,5 +149,32 @@ public class FXController : MonoBehaviour
         overlay = colour;
         fadeStart = Time.unscaledTime;
         fadeDuration = seconds;
+    }
+
+    private void RunStarted() => PlayCue(Profile != null ? Profile.runStartClip : null);
+    private void Revived() => PlayCue(Profile != null ? Profile.reviveClip : null);
+    public void FallingBlockImpact() => PlayCue(Profile != null ? Profile.fallingBlockImpactClip : null);
+
+    private void PlayCue(AudioClip clip)
+    {
+        if (clip != null && Profile != null) cueSource.PlayOneShot(clip, Profile.cueGain);
+    }
+
+    private void OnDestroy()
+    {
+        if (manager != null)
+        {
+            manager.PlayerBound -= Bind;
+            manager.Died -= Death;
+            manager.GoalReached -= Goal;
+            manager.RunStarted -= RunStarted;
+            manager.Revived -= Revived;
+        }
+        if (bound != null)
+        {
+            bound.Jumped -= Jump;
+            bound.Landed -= Land;
+            bound.Stepped -= Step;
+        }
     }
 }

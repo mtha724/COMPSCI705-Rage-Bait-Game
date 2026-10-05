@@ -23,3 +23,15 @@ MonoBehaviour:
   screenOpacity: 0.5
   deathTextSize: 112
   particleLifetime: 0.75
+  deathMessage: YOU DIED
+  deathTextColour: {r: 1, g: 0.31, b: 0.34, a: 1}
+  boldDeathText: 1
+  deathTextThickness: 1.25
+  deathTextBackdrop: 1
+  tintPlayerOnDeath: 1
+  playerDeathColour: {r: 1, g: 0, b: 0, a: 1}
+  deathClipOverride: {fileID: 8300000, guid: f3f16757664c48e69a690d0eb3d7eba1, type: 3}
+  reviveClip: {fileID: 8300000, guid: 17a4e19120f04500b6eea6d1729005d1, type: 3}
+  runStartClip: {fileID: 8300000, guid: 5a22640b28334e4c91c3b379f8c6e617, type: 3}
+  fallingBlockImpactClip: {fileID: 8300000, guid: add7763dca3a49d393e561a201b5f733, type: 3}
+  cueGain: 0.7

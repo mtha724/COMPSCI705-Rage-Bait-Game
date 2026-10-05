@@ -38,7 +38,7 @@ Apply Pitfall and Saw Adjustments updates these settings in all six saved scenes
 - GoalFlag: next scene; blank next scene means completed.
 - GameManager prefab: equal restart/transition delays, starting FX condition, optional timer, and optional active-time session limit (0 disables the limit).
 - Effects profile assets: particles, lifetime, layers, gain, overlay opacity and death text size.
-- FXController on GameManager: replace the five generated audio clips with the team's chosen sound assets.
+- FXController on GameManager supplies the five baseline movement/death/goal clips. `Assets/Effects/Overboard.asset` controls its red player tint, bold/thick red `YOU DIED` text and the four additional cues. Clip sources and exact collection cuts are documented in `Assets/Audio/Overboard/Sources.md`. Starting a new run plays Minecraft Cave; completing a death restart plays Eye of Rah; each falling block's first ground landing plays Pokémon Wall. The selected death cue can finish across the fixed 0.85-second restart delay.
 
 The included audio cues are original generated placeholders. They are not Roblox recordings. The overboard death uses red particles as a stylised splatter effect. Existing Pixel Adventure art and the existing character animation controller are reused.
 
@@ -57,3 +57,5 @@ Record the play session separately with your screen recorder, including game aud
 ## Validation
 
 Batch checks can be run with Unity's existing editor executable, `-batchmode -projectPath <project> -executeMethod PlatformerValidation.Run -logFile <log>`. These Play-mode checks include UI and particle rendering, so retain a graphics device. Do not supply `-quit`, because the validation runner waits for Play mode and exits when finished. Results are written to the ignored `Logs/validation.json` file. A successful run prints `PLATFORMER_VALIDATION_OK`.
+
+Run Overboard FX Checks, or batch method `PlatformerValidation.RunOverboardFeedback`, checks the saved audio references and selected clip lengths, new-run versus revival events, real falling-block impacts, red sprite tint, bold death text, contrast and clearing feedback after revival. It also checks that Low and Normal retain their original presentation. Save the current scene before using this tool; it opens Level 1 without regenerating any layouts.

@@ -31,6 +31,7 @@ public static partial class PlatformerBuilder
             p.screenOpacity = i == 2 ? .5f : 0f;
             p.deathTextSize = i == 2 ? 112 : 44;
             p.particleLifetime = i == 2 ? .75f : .4f;
+            ConfigureDeathPresentation(p);
             EditorUtility.SetDirty(p);
         }
         string[] names = { "Step", "Jump", "Land", "Death", "Goal" };
@@ -70,6 +71,22 @@ public static partial class PlatformerBuilder
         AssetDatabase.SaveAssets();
         EditorSceneManager.OpenScene("Assets/Levels/Level 1.unity");
         Debug.Log("PHASE_FOUR_OK");
+    }
+
+    // Keep generated profiles consistent with the authored Overboard asset without rebuilding level designs.
+    static void ConfigureDeathPresentation(FXProfile p)
+    {
+        bool overboard = p.condition == FXCondition.Overboard;
+        p.deathMessage = overboard ? "YOU DIED" : "You died";
+        p.deathTextColour = overboard ? new Color(1f, .31f, .34f) : Color.white;
+        p.boldDeathText = p.deathTextBackdrop = p.tintPlayerOnDeath = overboard;
+        p.deathTextThickness = overboard ? 1.25f : 0f;
+        p.playerDeathColour = Color.red;
+        p.cueGain = .7f;
+        p.deathClipOverride = overboard ? AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Overboard/Death.wav") : null;
+        p.reviveClip = overboard ? AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Overboard/EyeOfRah.wav") : null;
+        p.runStartClip = overboard ? AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Overboard/MinecraftCave.wav") : null;
+        p.fallingBlockImpactClip = overboard ? AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/Audio/Overboard/PokemonWall.wav") : null;
     }
 
     // Generate deterministic mono 16-bit PCM WAV placeholders; these are not recordings from Roblox.

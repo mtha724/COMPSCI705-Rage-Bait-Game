@@ -34,6 +34,8 @@ public class GameManager : MonoBehaviour
     public event Action<PlayerMove> PlayerBound;
     public event Action<Vector3> Died;
     public event Action<Vector3> GoalReached;
+    public event Action RunStarted;
+    public event Action Revived;
     public event Action<string, string> Recorded;
 
     // Clear the singleton even when Unity's Enter Play Mode settings disable domain reload.
@@ -79,7 +81,14 @@ public class GameManager : MonoBehaviour
         SessionStartedAt = Time.realtimeSinceStartupAsDouble;
         State = RunState.Transitioning;
         Record("session_start", "");
-        StartCoroutine(LoadLevel("Level 1"));
+        StartCoroutine(BeginRun());
+    }
+
+    private IEnumerator BeginRun()
+    {
+        yield return LoadLevel("Level 1");
+        // Play the opening cue after the new player is bound, rather than while the menu is visible.
+        if (State == RunState.Playing) RunStarted?.Invoke();
     }
 
     // Called by Hazard for both solid collisions and trigger contacts (including the fall kill zone).
@@ -117,6 +126,8 @@ public class GameManager : MonoBehaviour
         Record("retry", "death_restart");
         // This fixed scene name implements the game's 'death resets all progress' rule.
         yield return LoadLevel("Level 1"); // useful for testing
+        // Goal transitions bind players too; only a completed death restart counts as a revival.
+        if (State == RunState.Playing) Revived?.Invoke();
     }
 
     private IEnumerator Advance(string nextScene)

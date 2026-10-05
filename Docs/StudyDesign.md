@@ -14,9 +14,12 @@ All three conditions use the same scenes, traps, positions, timings, movement ph
 | Base audio gain | 0 | 0.14 | 0.24 |
 | Red/green overlay opacity | 0 | 0 | 0.5 |
 | Death text size | 44 | 44 | 112 |
+| Death text | You died | You died | YOU DIED, bold, thick red glyphs with dark outline/backing |
+| Player tint on death | Original | Original | Red |
+| Additional event cues | None | None | Selected death, revival, new-run and falling-block sounds; gain 0.7 |
 | Particle lifetime | 0.4 s | 0.4 s | 0.75 s |
 
-All conditions show “You died”. Restart delay is 0.85 seconds and goal delay is 0.65 seconds in every condition. Keep device/headphone volume fixed and check the final audio mix for clipping. Keep screen resolution and rendering performance comparable. Replace generated placeholder sounds before final data collection if the team wants a particular sound palette.
+Restart delay is 0.85 seconds and goal delay is 0.65 seconds in every condition. Keep device/headphone volume fixed and check the final audio mix for clipping. Keep screen resolution and rendering performance comparable. Low and Normal retain their original feedback; Overboard uses the selected clips documented in `Assets/Audio/Overboard/Sources.md` alongside the existing movement/goal cues. Each selected cue plays once per corresponding event, and its tail can continue across the unchanged restart delay. The cave sound plays when starting a new run, the Eye of Rah sound after a death restart, and the Pokémon wall sound on each falling block's first ground landing.
 
 ## Evidence and practitioner accounts
 

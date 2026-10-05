@@ -33,15 +33,17 @@ public class FallingObject : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!disappearOnLanding || !Activated || landed || collision.collider.gameObject.layer != LayerMask.NameToLayer("Ground")) return;
+        if (!Activated || landed || collision.collider.gameObject.layer != LayerMask.NameToLayer("Ground")) return;
         foreach (var contact in collision.contacts)
         {
             // An upward support normal identifies landing. Wall and player contacts do not remove a falling hazard.
             if (contact.normal.y <= .5f) continue;
             landed = true;
+            // One impact cue per falling block, including blocks that remain after landing.
+            GameManager.Instance?.GetComponent<FXController>()?.FallingBlockImpact();
             // Remove the whole object, including its artwork and lethal collider, after a brief impact pause.
             // Unity's delayed destruction uses scaled time, so pausing also pauses this countdown.
-            Destroy(gameObject, disappearDelay);
+            if (disappearOnLanding) Destroy(gameObject, disappearDelay);
             return;
         }
     }

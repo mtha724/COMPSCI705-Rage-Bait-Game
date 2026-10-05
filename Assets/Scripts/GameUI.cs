@@ -12,6 +12,8 @@ public class GameUI : MonoBehaviour
     private GameObject pausePanel;
     private Text summary, conditionLabel, timer, message;
     private Image flash;
+    private Image messageBackdrop;
+    private Outline messageThickening, messageOutline;
     private InputField participant;
     private Button quit;
     private bool paused;
@@ -37,7 +39,21 @@ public class GameUI : MonoBehaviour
         flash = Panel(root.transform, "ScreenFeedback", Color.clear).GetComponent<Image>();
         // Screen feedback is decorative and must not intercept clicks intended for menu buttons.
         flash.raycastTarget = false;
+        // A dark backing gives the red Overboard message consistent contrast over any level or flash.
+        var backing = new GameObject("DeathMessageBackdrop", typeof(RectTransform), typeof(Image));
+        backing.transform.SetParent(root.transform, false);
+        Rect(backing, Vector2.zero, new Vector2(1160, 170));
+        messageBackdrop = backing.GetComponent<Image>();
+        messageBackdrop.color = new Color(.025f, .015f, .025f, .96f);
+        messageBackdrop.raycastTarget = false;
+        backing.SetActive(false);
         message = Label(root.transform, "", new Vector2(0, 0), new Vector2(1200, 160), 44);
+        message.gameObject.name = "DeathMessage";
+        // The first outline expands the red glyphs; the second supplies an outer dark stroke.
+        messageThickening = message.gameObject.AddComponent<Outline>();
+        messageOutline = message.gameObject.AddComponent<Outline>();
+        messageOutline.effectColor = new Color(.015f, .005f, .01f, 1f);
+        messageThickening.enabled = messageOutline.enabled = false;
         timer = Label(root.transform, "", new Vector2(-560, 385), new Vector2(420, 60), 25);
         Label(root.transform, "A / D or arrows: move     Space: jump     Esc: menu", new Vector2(0, -415), new Vector2(1300, 50), 23);
         quit = Button(root.transform, "End run", new Vector2(660, 385), () => { manager.StopRun(); paused = false; Time.timeScale = 1f; });
@@ -82,7 +98,18 @@ public class GameUI : MonoBehaviour
         timer.text = playing && manager.showTimer ? "Time  " + manager.ActiveSeconds.ToString("0.0") + "s" : "";
         flash.color = fx != null ? fx.ScreenColour : Color.clear;
         message.text = fx != null ? fx.Message : "";
-        if (fx != null) message.fontSize = fx.MessageSize;
+        if (fx != null)
+        {
+            message.fontSize = fx.MessageSize;
+            message.color = fx.MessageColour;
+            message.fontStyle = fx.MessageBold ? FontStyle.Bold : FontStyle.Normal;
+            bool thicken = fx.MessageThickness > 0f;
+            messageThickening.enabled = messageOutline.enabled = thicken;
+            messageThickening.effectColor = fx.MessageColour;
+            messageThickening.effectDistance = new Vector2(fx.MessageThickness, -fx.MessageThickness);
+            messageOutline.effectDistance = new Vector2(fx.MessageThickness + 2f, -fx.MessageThickness - 2f);
+        }
+        messageBackdrop.gameObject.SetActive(fx != null && fx.MessageBackdrop && !string.IsNullOrEmpty(message.text));
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame && manager.State == RunState.Playing) TogglePause();
     }
 
