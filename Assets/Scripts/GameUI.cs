@@ -55,7 +55,7 @@ public class GameUI : MonoBehaviour
         messageOutline.effectColor = new Color(.015f, .005f, .01f, 1f);
         messageThickening.enabled = messageOutline.enabled = false;
         timer = Label(root.transform, "", new Vector2(-560, 385), new Vector2(420, 60), 25);
-        Label(root.transform, "A / D or arrows: move     Space: jump     Esc: menu", new Vector2(0, -415), new Vector2(1300, 50), 23);
+        Label(root.transform, "A / D or arrows: move     Space / W / Up arrow: jump     Esc: menu", new Vector2(0, -415), new Vector2(1300, 50), 23);
         quit = Button(root.transform, "End run", new Vector2(660, 385), () => { manager.StopRun(); paused = false; Time.timeScale = 1f; });
         menu = Panel(root.transform, "StartMenu", new Color(.06f, .08f, .12f, .96f));
         Label(menu.transform, "ONE MORE TRY", new Vector2(0, 245), new Vector2(1400, 120), 76);
