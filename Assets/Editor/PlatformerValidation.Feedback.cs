@@ -24,7 +24,7 @@ public static partial class PlatformerValidation
         foreach (var clip in new[] { profile.deathClipOverride, profile.reviveClip, profile.runStartClip, profile.fallingBlockImpactClip })
             clip.LoadAudioData();
         yield return new Await(() => profile.runStartClip.loadState == AudioDataLoadState.Loaded);
-        Assert(Mathf.Abs(profile.reviveClip.length - 3f) < .05f && Mathf.Abs(profile.runStartClip.length - 3f) < .05f &&
+        Assert(Mathf.Abs(profile.reviveClip.length - 2f) < .05f && Mathf.Abs(profile.runStartClip.length - 3f) < .05f &&
             Mathf.Abs(profile.fallingBlockImpactClip.length - 1f) < .05f, "Collection clips use the selected timestamp ranges");
         Assert(!cueSource.isPlaying, "Opening sound waits for gameplay rather than playing in the menu");
 
