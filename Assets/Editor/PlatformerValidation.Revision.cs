@@ -1,0 +1,315 @@
+using System;
+using System.Collections;
+using System.IO;
+using System.Linq;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
+
+public static partial class PlatformerValidation
+{
+    // Validate the revised saved layouts without regenerating or saving any scenes.
+    static void ValidateRevisedDesign()
+    {
+        float previous = 0f;
+        Assert(EditorBuildSettings.scenes.Length == 6, "Six playable scenes remain registered");
+        for (int level = 1; level <= 6; level++)
+        {
+            EditorSceneManager.OpenScene("Assets/Levels/Level " + level + ".unity");
+            var setup = UnityEngine.Object.FindFirstObjectByType<LevelSetup>();
+            var player = UnityEngine.Object.FindFirstObjectByType<PlayerMove>();
+            var goal = UnityEngine.Object.FindFirstObjectByType<Goal>();
+            Assert(level == 6 ? setup.travelDistance > 45f && setup.travelDistance <= 55f : setup.travelDistance > previous,
+                level == 6 ? "Level 6 travel is slightly longer than Level 3" : "Travel increases in level " + level);
+            Assert(Mathf.Approximately(setup.walkingTargetSeconds, setup.travelDistance / player.speed), "Walking target matches player speed in level " + level);
+            Assert(goal.nextScene == (level == 6 ? "" : "Level " + (level + 1)), "Genuine flag progression in level " + level);
+            previous = setup.travelDistance;
+            foreach (var root in SceneManager.GetActiveScene().GetRootGameObjects())
+                foreach (var t in root.GetComponentsInChildren<Transform>(true))
+                    if (GameObjectUtility.GetMonoBehavioursWithMissingScriptCount(t.gameObject) > 0) throw new Exception("Missing script on " + t.name);
+            Assert(true, "All scripts resolve in level " + level);
+            if (level <= 5)
+            {
+                var holes = UnityEngine.Object.FindObjectsByType<Hazard>(FindObjectsSortMode.None).Where(h => h.cause == "hole").ToArray();
+                Assert(holes.Length > 0 && holes.All(h => h.GetComponent<Collider2D>().enabled), "Active hole hazards in level " + level);
+                Assert(holes.All(h => h.GetComponentsInChildren<SpriteRenderer>(true).Length == 0), "Hole hazards have no spike artwork in level " + level);
+            }
+            Physics2D.SyncTransforms();
+            if (level == 2)
+            {
+                Assert(UnityEngine.Object.FindObjectsByType<DisappearingPlatform>(FindObjectsSortMode.None).Count(p => p.activateOnLanding) == 3, "Level 2 retains the team's three fake platforms");
+                float goalX = goal.transform.position.x;
+                Assert(UnityEngine.Object.FindFirstObjectByType<CameraFollow>().rightBoundary >= goalX + 1.5f, "Level 2 camera covers the moved goal");
+                Assert(Physics2D.OverlapPoint(new Vector2(20.85f, -.5f), 1 << 6) == null, "Level 2 parkour pit is genuinely open");
+                Assert(GameObject.Find("OpeningHoleFloor") != null, "Level 2 has the final opening hole");
+            }
+            if (level == 3)
+            {
+                var popups = UnityEngine.Object.FindObjectsByType<PopupSpikeTrap>(FindObjectsSortMode.None);
+                Assert(popups.Length == 7 && UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).Length == 8, "Level 3 has exactly 15 traps plus the hole");
+                Assert(UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).All(b => b.disappearOnLanding && Mathf.Approximately(b.disappearDelay, .15f)), "All eight Level 3 bricks disappear shortly after landing");
+                Assert(popups.Count(p => p.randomTiming) == 3, "Level 3 changes from four patterned to three irregular popup groups");
+            }
+            if (level == 4)
+            {
+                var flags = UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).OrderBy(f => f.transform.position.x).ToArray();
+                var runner = UnityEngine.Object.FindFirstObjectByType<RunningFlag>();
+                Assert(flags.Length == 4 && runner != null && flags.All(f => f.runner == runner), "Four floor traps share one running flag");
+                Assert(flags.Select(f => f.stageIndex).SequenceEqual(new[] { 0, 1, 2, 3 }), "Floor triggers advance the flag in route order");
+                Assert(runner.nextStops.Select(t => t.position.x).SequenceEqual(new[] { 17f, 26f, 47f, 55f }), "The flag escapes to each lure and the final finish");
+                Assert(!goal.enabled && !goal.GetComponent<Collider2D>().enabled && goal.transform.position.x == 8f, "The saved flag begins as a harmless lure");
+                Assert(UnityEngine.Object.FindObjectsByType<SpriteRenderer>(FindObjectsSortMode.None).Count(r => r.name.EndsWith("FlagArtwork")) == 1, "Level 4 contains only one visible flag");
+                float parkourX = GameObject.Find("ParkourSection").transform.position.x;
+                Assert(flags[2].transform.position.x < parkourX && flags[3].transform.position.x > parkourX + 10f, "Three flag traps precede parkour and one follows it");
+            }
+            if (level == 4 || level == 5)
+            {
+                var section = GameObject.Find("ParkourSection");
+                Assert(section.transform.childCount == 8, "Copied parkour contains seven platforms and one hole in level " + level);
+                Assert(section.GetComponentsInChildren<SpriteRenderer>().All(r => r.drawMode == SpriteDrawMode.Simple), "Parkour art uses Simple images in level " + level);
+            }
+            if (level == 5)
+            {
+                Assert(UnityEngine.Object.FindFirstObjectByType<ChasingSaw>() != null, "Level 5 has a chasing saw");
+                Assert(UnityEngine.Object.FindObjectsByType<ReverseZone>(FindObjectsSortMode.None).Count(z => z.restoreNormalControls) == 1, "The second direction trigger restores normal input");
+                Assert(Physics2D.OverlapPoint(new Vector2(62f, -.5f), 1 << 6) == null, "The final visible hole has no hidden floor");
+                Assert(UnityEngine.Object.FindObjectsByType<Hazard>(FindObjectsSortMode.None).Count(h => h.cause == "spikes") == 6, "Six visible spike groups protect the chase route");
+            }
+            if (level == 6) ValidateLevelSixDesign();
+        }
+        EditorSceneManager.OpenScene("Assets/Levels/Level 1.unity");
+    }
+
+    static IEnumerator RevisedPlayChecks()
+    {
+        yield return new Await(() => GameManager.Instance != null);
+        var manager = GameManager.Instance;
+        var oldBackground = InputSystem.settings.backgroundBehavior;
+        var oldEditorInput = InputSystem.settings.editorInputBehaviorInPlayMode;
+        InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+        InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+        manager.condition = FXCondition.Low;
+        manager.participantId = "automated-validation";
+        manager.StartRun();
+        yield return new Await(() => manager.State == RunState.Playing);
+        yield return .5f;
+        keyboard = InputSystem.AddDevice<Keyboard>("ValidationKeyboard");
+        var mouse = InputSystem.AddDevice<Mouse>("ValidationMouse");
+        Pair(manager, mouse);
+        Assert(manager.Player.CheckGrounded(), "Player stands on the authored starting floor");
+        Press(Key.D);
+        yield return .2f;
+        Assert(manager.Player.GetComponent<Rigidbody2D>().linearVelocity.x > 4f, "Input still drives movement");
+        Press(Key.Space);
+        yield return .08f;
+        Assert(manager.Player.GetComponent<Rigidbody2D>().linearVelocity.y > 0f && !manager.Player.CheckGrounded(), "Jump launches and clears grounding");
+        Release();
+        var wall = new GameObject("ValidationWall").AddComponent<BoxCollider2D>();
+        wall.size = new Vector2(.5f, 5f);
+        wall.transform.position = new Vector2(6f, 2f);
+        Teleport(new Vector2(5.4f, 2.5f));
+        Press(Key.D);
+        yield return .3f;
+        Assert(manager.Player.transform.position.y < 2.1f, "Holding input into a wall does not stop falling");
+        Release();
+        UnityEngine.Object.Destroy(wall.gameObject);
+        Teleport(new Vector2(10.2f, 1.5f));
+        Freeze(manager, true);
+        yield return .35f;
+        Assert(!GameObject.Find("OpeningFloor").GetComponent<BoxCollider2D>().enabled, "Level 1's opening floor removes collision");
+        var hole = UnityEngine.Object.FindObjectsByType<Hazard>(FindObjectsSortMode.None).First(h => h.cause == "hole");
+        var oldPlayer = manager.Player;
+        Freeze(manager, false);
+        Teleport(hole.transform.position);
+        yield return new Await(() => manager.State == RunState.Transitioning);
+        yield return new Await(() => manager.State == RunState.Playing);
+        // Respect the team's current local restart destination; verify the new hazard uses the existing death flow.
+        Assert(manager.Deaths == 1 && oldPlayer == null && manager.Player.MovementEnabled, "Invisible hole kills and reloads a fresh player while retaining totals");
+        Assert(File.ReadAllText(manager.GetComponent<RunLogger>().LogPath).Contains("\"hole\""), "Hole death cause is recorded");
+        if (manager.CurrentLevel != "Level 2")
+        {
+            Load("Level 2");
+            yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 2");
+        }
+        Pair(manager, mouse);
+        var fake = UnityEngine.Object.FindObjectsByType<DisappearingPlatform>(FindObjectsSortMode.None).First(p => p.activateOnLanding);
+        Teleport(new Vector2(fake.transform.position.x, fake.transform.position.y + 1.1f));
+        yield return .28f;
+        Freeze(manager, true);
+        yield return .4f;
+        Assert(fake.Activated && !fake.GetComponent<BoxCollider2D>().enabled, "The team's fake platform still collapses on landing");
+        var goal = UnityEngine.Object.FindFirstObjectByType<Goal>();
+        Teleport(new Vector2(goal.transform.position.x, 3f));
+        yield return .8f;
+        var camera = Camera.main;
+        float visibleX = camera.WorldToViewportPoint(goal.transform.position).x;
+        Assert(visibleX > 0f && visibleX < 1f, "Level 2's camera actually shows the moved goal");
+        var endFloor = GameObject.Find("OpeningHoleFloor").GetComponent<DisappearingPlatform>();
+        Teleport(new Vector2(endFloor.transform.position.x - .8f, 1.5f));
+        yield return .25f;
+        Assert(endFloor.Activated && !endFloor.GetComponent<BoxCollider2D>().enabled, "Level 2's final hole opens before the flag");
+        Load("Level 3");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 3");
+        var firstBrick = GameObject.Find("FallingBrick_1");
+        Teleport(new Vector2(GameObject.Find("BrickTrigger_1").transform.position.x, .7f));
+        Freeze(manager, true);
+        yield return .04f;
+        Teleport(new Vector2(firstBrick.transform.position.x - 2f, .7f));
+        yield return .2f;
+        Assert(firstBrick.GetComponent<Rigidbody2D>().bodyType == RigidbodyType2D.Dynamic, "Patterned brick trigger releases its brick");
+        Assert(firstBrick.transform.position.y > 1f && firstBrick.GetComponent<Collider2D>().enabled && firstBrick.GetComponentInChildren<SpriteRenderer>().enabled,
+            "The brick retains its artwork and collider while falling");
+        var patterned = GameObject.Find("PopupSpikes_1").GetComponent<PopupSpikeTrap>();
+        yield return new Await(() => patterned.Exposed);
+        Assert(patterned.GetComponent<Collider2D>().enabled && patterned.artwork.GetComponent<SpriteRenderer>().enabled, "Popup spike artwork and lethal collider rise together");
+        yield return new Await(() => !patterned.Exposed);
+        Assert(!patterned.GetComponent<Collider2D>().enabled, "Hidden popup spikes are harmless");
+        var irregular = GameObject.Find("PopupSpikes_7").GetComponent<PopupSpikeTrap>();
+        Teleport(new Vector2(irregular.transform.position.x - 4.5f, 3f));
+        yield return new Await(() => irregular.Exposed);
+        Assert(irregular.randomTiming && irregular.Activated, "Irregular end-section spikes cycle in play");
+        yield return new Await(() => firstBrick == null);
+        Assert(GameObject.Find("FallingBrick_1") == null, "The landed brick disappears without leaving a solid or lethal collider");
+        var remainingBricks = UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        Teleport(new Vector2(GameObject.Find("BrickTrigger_1").transform.position.x - 2f, .7f));
+        foreach (var brick in remainingBricks) brick.Activate();
+        yield return new Await(() => remainingBricks.All(b => b == null));
+        Assert(UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None).Length == 0, "Every Level 3 brick is removed after its fall");
+        Load("Level 3");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 3");
+        var restoredBricks = UnityEngine.Object.FindObjectsByType<FallingObject>(FindObjectsSortMode.None);
+        Assert(restoredBricks.Length == 8 && restoredBricks.All(b => !b.Activated && b.GetComponent<Collider2D>().enabled), "Reloading restores all eight falling bricks");
+        int ceilingDeaths = manager.Deaths;
+        var lethalBrick = GameObject.Find("FallingBrick_1").GetComponent<FallingObject>();
+        lethalBrick.Activate();
+        Teleport(new Vector2(lethalBrick.transform.position.x, .44f));
+        Freeze(manager, true);
+        yield return new Await(() => manager.State == RunState.Transitioning);
+        yield return new Await(() => manager.State == RunState.Playing);
+        Assert(manager.Deaths == ceilingDeaths + 1 && File.ReadAllText(manager.GetComponent<RunLogger>().LogPath).Contains("\"ceiling\""),
+            "A falling brick still kills the player before ground cleanup");
+        Load("Level 4");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 4");
+        var lures = UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).OrderBy(f => f.transform.position.x).ToArray();
+        var runningFlag = UnityEngine.Object.FindFirstObjectByType<RunningFlag>();
+        var flagObject = runningFlag.gameObject;
+        Teleport(new Vector2(runningFlag.transform.position.x, 1.2f));
+        Freeze(manager, true);
+        yield return .12f;
+        Assert(manager.CurrentLevel == "Level 4" && runningFlag.CompletedStages == 0 && !runningFlag.GoalReady, "Touching the initial flag does not advance the level");
+        lures[3].Activate();
+        Assert(runningFlag.CompletedStages == 0 && !lures[3].Activated && !lures[3].floor.Activated, "Out-of-order floor activation cannot skip flag stages");
+        for (int i = 0; i < lures.Length; i++)
+        {
+            var lure = lures[i];
+            float startX = runningFlag.transform.position.x;
+            Teleport(new Vector2(lure.transform.position.x - 1.2f, 1.2f));
+            yield return .3f;
+            Assert(lure.Activated && !lure.floor.GetComponent<Collider2D>().enabled && runningFlag.transform.position.x > startX + 1f,
+                "Floor " + lure.name + " opens while the shared flag escapes right");
+            if (i == 0)
+            {
+                Assert(!runningFlag.TryAdvance(0) && runningFlag.CompletedStages == 1, "Repeated activation does not advance the flag twice");
+                manager.SetPaused(true);
+                Vector3 flagPosition = runningFlag.transform.position;
+                yield return .15f;
+                Assert(runningFlag.transform.position == flagPosition, "Pause freezes the running flag");
+                manager.SetPaused(false);
+            }
+            yield return new Await(() => !runningFlag.Moving);
+            Assert(runningFlag.gameObject == flagObject && runningFlag.CompletedStages == i + 1 &&
+                Vector3.Distance(runningFlag.transform.position, runningFlag.nextStops[i].position) < .001f,
+                "The same flag reaches escape stop " + (i + 1));
+            if (i < lures.Length - 1)
+                Assert(!runningFlag.GoalReady && !runningFlag.GetComponent<Collider2D>().enabled, "Escape stop " + (i + 1) + " is still a fake goal");
+        }
+        Assert(manager.CurrentLevel == "Level 4" && runningFlag.GoalReady && runningFlag.GetComponent<Goal>().enabled && runningFlag.GetComponent<Collider2D>().enabled,
+            "The final escape arms the same flag as the genuine goal");
+        Teleport(new Vector2(runningFlag.transform.position.x, .8f));
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 5");
+        Assert(true, "Reaching the running flag at the finish advances to Level 5");
+        Load("Level 4");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 4");
+        runningFlag = UnityEngine.Object.FindFirstObjectByType<RunningFlag>();
+        Assert(runningFlag.CompletedStages == 0 && runningFlag.transform.position.x == 8f && !runningFlag.GoalReady &&
+            UnityEngine.Object.FindObjectsByType<FakeFlagTrap>(FindObjectsSortMode.None).All(t => !t.Activated && !t.floor.Activated),
+            "Reloading Level 4 resets the single flag and all four floors");
+        Load("Level 5");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 5");
+        Pair(manager, mouse);
+        var saw = UnityEngine.Object.FindFirstObjectByType<ChasingSaw>();
+        Teleport(saw.transform.position);
+        yield return .12f;
+        Assert(manager.State == RunState.Playing && !saw.Activated, "The waiting saw is harmless before the chase trigger");
+        Teleport(new Vector2(15f, .44f));
+        yield return .15f;
+        Assert(manager.Player.ControlsReversed, "The initial chase zone reverses horizontal input");
+        float sawX = saw.transform.position.x;
+        Press(Key.D);
+        yield return .15f;
+        Assert(manager.Player.GetComponent<Rigidbody2D>().linearVelocity.x < -4f, "Right input moves left after reversal");
+        Release();
+        Assert(saw.Activated && saw.transform.position.x > sawX, "The saw trigger starts a chase toward the right");
+        manager.SetPaused(true);
+        Vector3 pausedSaw = saw.transform.position;
+        float activeTime = manager.ActiveSeconds;
+        yield return .15f;
+        Assert(saw.transform.position == pausedSaw && Mathf.Approximately(activeTime, manager.ActiveSeconds), "Pause freezes the saw and excludes paused time");
+        manager.SetPaused(false);
+        Teleport(new Vector2(17f, .44f));
+        yield return .04f;
+        Press(Key.A, Key.Space);
+        yield return .24f;
+        Assert(manager.State == RunState.Playing && manager.Player.transform.position.x > 18f, "The player can jump over visible spikes during reversal");
+        Release();
+        Teleport(new Vector2(60.3f, .44f));
+        yield return .04f;
+        Press(Key.A, Key.Space);
+        yield return .56f;
+        Release();
+        Assert(manager.State == RunState.Playing && manager.Player.transform.position.x >= 63f, "The final visible hole can be jumped with the current movement settings");
+        Teleport(new Vector2(63.7f, .6f));
+        yield return .08f;
+        Assert(!manager.Player.ControlsReversed, "The trigger after the visible hole restores normal controls");
+        Press(Key.D);
+        yield return .08f;
+        Assert(manager.Player.GetComponent<Rigidbody2D>().linearVelocity.x > 4f, "Right input moves right again after restoration");
+        Release();
+        int deaths = manager.Deaths;
+        Teleport(saw.transform.position);
+        yield return new Await(() => manager.State == RunState.Transitioning);
+        yield return new Await(() => manager.State == RunState.Playing);
+        Assert(manager.Deaths == deaths + 1 && !manager.Player.ControlsReversed, "Saw contact kills once and resets player control state");
+        Assert(UnityEngine.Object.FindObjectsByType<GameManager>(FindObjectsSortMode.None).Length == 1, "Scene changes retain a single persistent manager");
+        Load("Level 1");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 1");
+        Teleport(new Vector2(25f, .8f));
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 2");
+        Assert(true, "Genuine goal still advances normally");
+        Load("Level 6");
+        yield return new Await(() => manager.State == RunState.Playing && manager.CurrentLevel == "Level 6");
+        var finalChecks = LevelSixPlayChecks(manager, mouse);
+        while (finalChecks.MoveNext()) yield return finalChecks.Current;
+        Assert(File.ReadAllText(manager.GetComponent<RunLogger>().LogPath).Contains("completed"), "Final completion is recorded");
+        for (int choice = 1; choice <= 2; choice++)
+        {
+            manager.condition = (FXCondition)choice;
+            manager.StartRun();
+            yield return new Await(() => manager.State == RunState.Playing);
+            manager.Die("validation_fx");
+            yield return .04f;
+            var feedback = manager.GetComponent<FXController>();
+            Assert(feedback.GetComponentInChildren<ParticleSystem>().particleCount >= feedback.Profile.deathParticles && feedback.Message == "You died", "Death FX remains functional in " + manager.condition);
+            manager.StopRun("validation_cleanup");
+        }
+        InputSystem.settings.backgroundBehavior = oldBackground;
+        InputSystem.settings.editorInputBehaviorInPlayMode = oldEditorInput;
+        InputSystem.RemoveDevice(keyboard);
+        InputSystem.RemoveDevice(mouse);
+    }
+
+    static void Pair(GameManager manager, Mouse mouse) => manager.Player.GetComponent<PlayerInput>().SwitchCurrentControlScheme("Keyboard&Mouse", keyboard, mouse);
+    static void Freeze(GameManager manager, bool freeze) => manager.Player.GetComponent<Rigidbody2D>().constraints = freeze ? RigidbodyConstraints2D.FreezeAll : RigidbodyConstraints2D.FreezeRotation;
+}
