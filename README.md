@@ -13,6 +13,8 @@
 
 > **Important:** Do not move, rename or delete any other files in the extracted folder.
 
+Alternatively visit https://mtha724.github.io/COMPSCI705-Rage-Bait-Game/ for the web page version.
+
 ## Game Functionality
 
 ### Main Menu
