@@ -1,15 +1,52 @@
 # COMPSCI705-Rage-Bait-Game
 
-# Set Up
+## Running the Game
 
-## Installing Unity
+1. Go to the [latest release](https://github.com/mtha724/COMPSCI705-Rage-Bait-Game/releases/tag/v0.1.0) or click **Releases** on the right-hand side of this repository's main page.
+2. Under **Assets**, download the zip file for your device:
+   - **Windows**: `OneMoreTry-v0.1.0-Windows.zip`
+   - **macOS**: `OneMoreTry-v0.1.0-macOS-Universal.zip`
+   - **Linux**: `OneMoreTry-v0.1.0-Linux-x86_64.tar.gz`
+   - **Web**: `OneMoreTry-v0.1.0-Web.zip`
+3. Extract the downloaded file.
+4. Open the extracted folder and run the **Ragebaitgame** application.
+
+> **Important:** Do not move, rename or delete any other files in the extracted folder.
+
+## Game Functionality
+
+### Main Menu
+
+1. **Choose a feedback mode** by clicking **Low**, **Normal**, or **Overboard**. This sets the intensity of the visual and audio effects (FX) during gameplay. The current selection is shown above the buttons.
+2. **Toggle the timer (optional)** by clicking **Toggle timer** to show or hide the on-screen timer. Its current state is shown next to the feedback mode.
+3. **Click Start** to begin playing.
+
+<img width="845" height="473" alt="image" src="https://github.com/user-attachments/assets/e781d519-14cf-4017-9a78-af7ee1d676c8" />
+
+### How to Play
+
+Reach the flag at the end of the level.
+
+| Action | Controls |
+|---|---|
+| Move | `A` / `D` or `←` / `→` |
+| Jump | `Space`, `W`, or `↑` |
+| Return to menu | `Esc` |
+
+## Differences between Project Plan and Implementation
+
+- The project originally planned for mouse-only controls. During implementation, these evolved into keyboard input, as described in the [Game Functionality](#game-functionality) section.
+
+## Setting Up the Project
+
+### Installing Unity
 Search "Unity" in the browser
 Click Pricing, find the Personal (free) option and click Download now
 From there pick the download for your OS type (linux, mac, windows) and click download and follow the instructions there, you will install Unity Hub and the Editor.
 
 Note that if you encounter 403 error switch to a different browser and try the same steps again. From experience Chrome gave 403 error but Edge worked.
 
-## Setup
+### Setup
 Clone the project
 
 ```
@@ -17,38 +54,6 @@ git clone https://github.com/mtha724/COMPSCI705-Rage-Bait-Game.git
 ```
 
 In Unity Hub click `add` select `add from disk` and open.
-## Browser game (GitHub Pages)
 
-The `web/` folder contains the ready-to-play Unity Web export from
-`Builds/v0.1.0/Packages/OneMoreTry-v0.1.0-Web.zip`. No Unity installation or
-build step is needed to deploy this version.
-
-### First deployment
-
-1. Push the `feature/browser-game` branch to GitHub.
-2. Open repository **Settings > Pages** and set **Source** to **GitHub Actions**.
-3. In **Settings > Environments > github-pages**, if deployment branches are
-   restricted, allow `feature/browser-game` (and `main` after merging).
-4. In **Actions**, open **Deploy browser game** and re-run the latest workflow
-   if it ran before Pages was enabled. After merging the workflow into the
-   default branch, it can also be started with **Run workflow**.
-5. Open https://mtha724.github.io/COMPSCI705-Rage-Bait-Game/ once deployment succeeds.
-
-The workflow publishes only `web/`. Changes to that folder on `feature/browser-game`
-or `main` deploy automatically. Both branches target the same site; after merging,
-delete the feature branch or remove it from the workflow's branch list to keep
-`main` as the only publishing branch.
-
-### Updating the game
-
-Replace the contents of `web/` with a fresh Unity Web export, retaining
-`index.html`, `Build/`, `TemplateData/`, and `.nojekyll`. Include `StreamingAssets/`
-if the new export generates it. Enable **Decompression Fallback** in Unity when
-using compressed builds; the included `.unityweb` build already has it enabled.
-Keep the generated relative asset URLs so the game works under the repository path.
-Commit and push the updated `web/` folder. Editing Unity source files alone does
-not update this prebuilt game.
-
-For a local preview with Python installed, run `python -m http.server 8000 --directory web`
-from the repository root, then open http://localhost:8000. Use an HTTP server;
-opening `index.html` directly as a file will not load the Unity game correctly.
+### Playable prototype
+Open Assets/Levels/Level 1.unity in Unity 6.6, press Play, select a feedback condition and click Start. See [development instructions](Docs/Development.md) and [study design notes](Docs/StudyDesign.md).
